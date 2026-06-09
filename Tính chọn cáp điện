@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Tính Chọn Cáp Điện - VAS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght=700;900&family=Inter:wght=400;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+        /* ================= CSS GIAO DIỆN CHUẨN DOANH NGHIỆP ================= */
+        html, body {
+            background-color: #F8FAFC !important; color: #0F172A !important;
+            font-family: 'Inter', sans-serif; margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .app-container { max-width: 1200px; width: 100%; }
+        
+        .brand-header {
+            background: radial-gradient(circle at top left, #0f172a, #1e293b);
+            padding: 35px 20px; border-radius: 4px; text-align: center;
+            margin-bottom: 30px; border-bottom: 5px solid #0066CC;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.3);
+        }
+        .brand-title {
+            font-family: 'Orbitron', sans-serif !important; font-size: 52px !important; font-weight: 900 !important;
+            letter-spacing: 4px; margin: 0; text-transform: uppercase;
+            background: linear-gradient(135deg, #FFFFFF 30%, #93C5FD 60%, #0066CC 100%);
+            -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important;
+            text-shadow: 1px 1px 0px #004494, 2px 2px 0px #004494, 3px 3px 0px #003370, 4px 4px 0px #002244;
+        }
+        .brand-subtitle {
+            color: #94A3B8 !important; font-size: 13px !important; font-weight: 600;
+            letter-spacing: 2px; margin-top: 12px; text-transform: uppercase;
+        }
+        .section-container {
+            background-color: #FFFFFF !important; border: 1px solid #E2E8F0 !important;
+            border-top: 4px solid #475569 !important; border-radius: 8px !important;
+            padding: 22px !important; margin-bottom: 20px !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03) !important;
+        }
+        h3 {
+            color: #475569 !important; font-weight: 700 !important; font-size: 18px !important; margin-top: 0;
+            border-bottom: 2px solid #F1F5F9; padding-bottom: 6px;
+        }
+        h4 { color: #0F172A; margin-top: 20px; margin-bottom: 10px; font-size: 16px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px; color: #0F172A;}
+        input[type="number"], input[type="text"], select {
+            width: 100%; padding: 10px; border: 1px solid #CBD5E1;
+            border-radius: 6px; box-sizing: border-box; font-family: 'Inter', sans-serif;
+            background-color: #FFFFFF; color: #0F172A;
+        }
+        .radio-group { display: flex; gap: 15px; font-size: 14px; margin-bottom: 15px;}
+        
+        .result-zone {
+            background-color: #FFFFFF !important; border: 2px solid #0066CC !important;
+            border-top: 6px solid #0066CC !important; border-radius: 8px !important;
+            padding: 25px !important; margin-top: 15px !important; 
+            box-shadow: 0 10px 15px -3px rgba(0, 84, 166, 0.1) !important;
+            display: none;
+        }
+        .result-main-title {
+            color: #0066CC !important; font-size: 24px !important; font-weight: 700 !important; 
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px !important; 
+            border-bottom: 3px solid #0066CC; padding-bottom: 8px;
+        }
+        .final-conclusion {
+            background-color: #EFF6FF !important; border-left: 6px solid #2563EB !important;
+            padding: 15px !important; border-radius: 4px; font-size: 18px !important; font-weight: 700 !important;
+            color: #1E40AF !important; margin-top: 15px;
+        }
+        .info-box {
+            background-color: #E0F2FE; border-left: 4px solid #0284C7;
+            padding: 12px; border-radius: 4px; color: #0369A1; font-weight: 600; font-size: 14px; margin-bottom: 15px;
+        }
+        .success-box {
+            background-color: #F0FDF4; border-left: 4px solid #16A34A;
+            padding: 15px; border-radius: 4px; color: #166534; margin-bottom: 15px; line-height: 1.5;
+        }
+        .error-box {
+            background-color: #FEF2F2; border-left: 4px solid #DC2626;
+            padding: 15px; border-radius: 4px; color: #991B1B; font-weight: bold; margin-bottom: 15px;
+        }
+        button.btn-primary {
+            background-color: #2563EB; color: white; padding: 15px; border: none;
+            border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%;
+            font-size: 18px; margin-top: 20px; transition: 0.3s;
+        }
+        button.btn-primary:hover { background-color: #1D4ED8; }
+        
+        button.btn-pdf {
+            background-color: #16A34A; color: white; padding: 15px; border: none;
+            border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%;
+            font-size: 18px; margin-top: 15px; transition: 0.3s;
+            display: none; 
+        }
+        button.btn-pdf:hover { background-color: #15803D; }
+        button.btn-pdf:disabled { background-color: #94A3B8; cursor: not-allowed; }
+
+        .hidden { display: none !important; }
+        .metric-box { padding: 15px; border: 1px solid #E2E8F0; border-radius: 6px; background: #F8FAFC; text-align: left; }
+        .metric-label { font-size: 13px; color: #64748B; margin-bottom: 5px; font-weight: 600;}
+        .metric-value { font-size: 22px; font-weight: 700; color: #0F172A; }
+
+        /* CSS CHO CỬA SỔ POPUP (MODAL) XUẤT PDF */
+        .modal {
+            display: none; 
+            position: fixed; z-index: 1000; left: 0; top: 0;
+            width: 100%; height: 100%; overflow: auto; 
+            background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            background-color: #FFFFFF; margin: 8% auto; padding: 30px;
+            border-radius: 8px; border-top: 5px solid #0284C7;
+            width: 90%; max-width: 600px; box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            position: relative; animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .close-btn {
+            color: #94A3B8; position: absolute; top: 15px; right: 20px;
+            font-size: 28px; font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        .close-btn:hover { color: #0F172A; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="brand-header">
+        <div class="brand-title">VAS</div>
+        <div class="brand-subtitle">🔥ĐÓN ĐẦU XU THẾ - LÀM CHỦ NĂNG LƯỢNG🔥</div>
+        <div class="brand-subtitle">🛠️ HỆ THỐNG TÍNH TOÁN KỸ THUẬT - TIẾT DIỆN CÁP - CHỌN CB 🛠️</div>
+    </div>
+
+    <div id="pdfModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h3 style="color: #0284C7 !important; border-bottom: none; margin-bottom: 20px;">📄 Thông tin Dự án (Phục vụ báo cáo)</h3>
+            <div class="grid-2">
+                <div class="form-group"><label>Tên dự án (Project):</label><input type="text" id="pdf_project" value=""></div>
+                <div class="form-group"><label>Tên tuyến dây (Feeder Name):</label><input type="text" id="pdf_feeder" value=""></div>
+                <div class="form-group"><label>Kỹ sư thiết kế (Engineer):</label><input type="text" id="pdf_engineer" value=""></div>
+                <div class="form-group"><label>Khách hàng (Customer):</label><input type="text" id="pdf_customer" value=""></div>
+                <div class="form-group" style="grid-column: span 2;"><label>Tên công ty (Company):</label><input type="text" id="pdf_company" value=""></div>
+            </div>
+            <button class="btn-pdf" id="btn_confirm_pdf" style="display: block; width: 100%; margin-top: 10px;" onclick="generatePDF()">✅ XÁC NHẬN & TẢI PDF VỀ MÁY</button>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div class="section-container">
+            <h3>📋 1. Thông số phụ tải & Tuyến cáp</h3>
+            <div class="form-group">
+                <label>Kiểu hệ thống điện</label>
+                <select id="system_type" onchange="updateSystemRelated()">
+                    <option value="3 pha">3 pha</option>
+                    <option value="1 pha">1 pha</option>
+                </select>
+            </div>
+            <div class="grid-2">
+                <div class="form-group"><label>Điện áp nguồn U (V)</label><input type="number" id="voltage" value="400" step="10"></div>
+                <div class="form-group"><label>Hệ số công suất cosφ</label><input type="number" id="cos_phi" value="1.00" step="0.01"></div>
+                <div class="form-group">
+                    <label>Vật liệu lõi cáp dẫn</label>
+                    <select id="conductor_type">
+                        <option value="Copper">Copper</option>
+                        <option value="Aluminum">Aluminum</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Hệ số dự trữ (k_dự trữ)</label><input type="number" id="k_du_tru" value="1.00" step="0.05"></div>
+            </div>
+
+            <label>Phương thức khai báo phụ tải:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="input_type" value="P" checked onchange="toggleLoadInput()"> Công suất P (kW)</label>
+                <label><input type="radio" name="input_type" value="S" onchange="toggleLoadInput()"> Công suất S (kVA)</label>
+                <label><input type="radio" name="input_type" value="I" onchange="toggleLoadInput()"> Dòng điện I (A)</label>
+            </div>
+            
+            <div id="div_p" class="form-group"><label>Nhập công suất tác dụng P (kW)</label><input type="number" id="val_p" value="100" step="1"></div>
+            <div id="div_s" class="form-group hidden"><label>Nhập công suất biểu kiến S (kVA)</label><input type="number" id="val_s" value="12" step="1"></div>
+            <div id="div_i" class="form-group hidden"><label>Nhập trực tiếp giá trị dòng tải I (A)</label><input type="number" id="val_i" value="20" step="1"></div>
+
+            <div class="grid-2">
+                <div class="form-group"><label>Chiều dài tuyến cáp (m)</label><input type="number" id="length" value="5" step="5"></div>
+                <div class="form-group"><label>Sụt áp tối đa cho phép (%)</label><input type="number" id="deltaV_allow" value="3.0" step="0.5"></div>
+            </div>
+        </div>
+
+        <div class="section-container">
+            <h3>⚙️ 2. Điều kiện lắp đặt & Hệ số hiệu chỉnh</h3>
+            <div class="form-group">
+                <label>Vị trí lắp đặt</label>
+                <select id="cable_routing" onchange="toggleEnv()">
+                    <option value="Đi trên không/thang máng">Đi trên không/thang máng</option>
+                    <option value="Cáp đi ngầm chôn trực tiếp trong đất">Cáp đi ngầm chôn trực tiếp trong đất</option>
+                    <option value="Cáp đi trong ống chôn trong đất">Cáp đi trong ống chôn trong đất</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Loại vật liệu cách điện cáp (Bắt buộc)</label>
+                <select id="insul_material" onchange="updateDropdowns()">
+                    <option value="XLPE/EPR">XLPE/EPR</option>
+                    <option value="PVC">PVC</option>
+                </select>
+            </div>
+
+            <div id="block_air">
+                <div class="form-group">
+                    <label>Cách xếp đặt cáp (Installation Method)</label>
+                    <select id="air_method_choice"></select>
+                </div>
+                <div class="form-group">
+                    <label>k4 – Phương thức đi cáp gom nhóm trên không</label>
+                    <select id="air_arr" onchange="updateDynamicK()"></select>
+                </div>
+                <div class="form-group">
+                    <label>Nhiệt độ không khí xung quanh (°C)</label>
+                    <select id="air_temp" onchange="updateDynamicK()"></select>
+                </div>
+            </div>
+
+            <div id="block_ground" class="hidden">
+                <div class="form-group">
+                    <label>Cách sắp xếp bố trí cáp đi ngầm dưới đất</label>
+                    <select id="ground_method_choice"></select>
+                </div>
+                <div class="form-group">
+                    <label>k4 – Hệ số hiệu chỉnh gom nhóm mạch cáp chạy dưới đất</label>
+                    <select id="ground_arr" onchange="updateDynamicK()"></select>
+                </div>
+                <div class="form-group">
+                    <label>Nhiệt độ môi trường đất thực tế (°C)</label>
+                    <select id="ground_temp" onchange="updateDynamicK()"></select>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group"><label>k2 – Loại đất</label><select id="soil_type" onchange="updateDynamicK()"></select></div>
+                    <div class="form-group"><label>k3 – Độ sâu chôn</label><select id="depth_type" onchange="updateDynamicK()"></select></div>
+                </div>
+            </div>
+            
+            <div class="info-box" id="dynamic_k_display">📊 Hệ số K áp dụng (Cấu hình 1 mạch): 1.0000</div>
+        </div>
+    </div>
+
+    <div class="section-container">
+        <h3>🎯 3. Ràng buộc thông số (chọn thông số muốn giữ dưới đây):</h3>
+        <p style="font-size:14px; color: #475569;">Tích chọn vào mục tương ứng để áp đặt ràng buộc thiết kế cố định.</p>
+        <div class="grid-3">
+            <div class="form-group">
+                <label><input type="checkbox" id="fix_num_cables" checked onchange="toggleConstraint()"> 📌 Số mạch song song</label>
+                <input type="number" id="fixed_num_val" value="1" min="1" onchange="updateDynamicK()">
+            </div>
+            <div class="form-group">
+                <label><input type="checkbox" id="fix_area" onchange="toggleConstraint()"> 📐 Tiết diện cáp</label>
+                <select id="fixed_area_val" disabled></select>
+            </div>
+            <div class="form-group">
+                <label><input type="checkbox" id="fix_deltaV"> 📉 Ràng buộc nghiêm ngặt % Sụt áp</label>
+                <!--
+				<div class="info-box" style="padding: 8px; margin-top:5px; font-size:12px;">Yêu cầu: Độ sụt áp thực tế buộc phải ≤ <span id="lbl_dv">5.0</span>%</div>
+				-->
+            </div>
+        </div>
+        
+        <hr style="border: 0.5px solid #E2E8F0; margin: 15px 0;">
+        <h3>🔌 4. Cấu hình Trạm biến áp</h3>
+        <div class="grid-2">
+            <div class="form-group"><label>Công suất Trạm biến áp (kVA)</label><input type="number" id="s_ba" value="1000"></div>
+            <div class="form-group"><label>Điện áp ngắn mạch U_k (%)</label><input type="number" id="u_k" value="6.0" step="0.5"></div>
+        </div>
+    </div>
+
+    <button class="btn-primary" onclick="runCalculation()">🚀 TÍNH TOÁN CHỌN CÁP VÀ CB</button>
+    <button class="btn-pdf" id="btn_open_modal" onclick="openModal()">📥 XUẤT BÁO CÁO PDF (CABLE CALCULATION REPORT)</button>
+
+    <div id="result_zone" class="result-zone">
+        <div class="result-main-title">🔥 KẾT QUẢ TÍNH TOÁN HỆ THỐNG</div>
+        <div id="error_msg" class="error-box" style="display:none;"></div>
+        <div id="success_content"></div>
+    </div>
+</div>
+
+<script>
+/* ================= THUẬT TOÁN CORE & DATA BẢNG TRA ================= */
+const standard_sizes = [1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240, 300, 400, 500, 630, 800, 1000];
+const cb_table_1p = [6, 10, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125, 160];
+const cb_table_3p = [6, 10, 16, 20, 25, 32, 40, 50, 63, 75, 80, 100, 125, 160, 175, 200, 225, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000, 6300, 8000, 10000];
+const market_icu = [6, 10, 15, 18, 22, 25, 30, 36, 42, 50, 65, 70, 85, 100, 120, 150];
+
+const res_cu = {1.5: 12.1, 2.5: 7.41, 4: 4.61, 6: 3.08, 10: 1.83, 16: 1.15, 25: 0.727, 35: 0.524, 50: 0.387, 70: 0.268, 95: 0.193, 120: 0.153, 150: 0.124, 185: 0.0991, 240: 0.0754, 300: 0.0601, 400: 0.047, 500: 0.0366, 630: 0.0283, 800: 0.0221, 1000: 0.0176};
+const res_al = {2.5: 12.1, 4: 7.41, 6: 4.61, 10: 3.08, 16: 1.91, 25: 1.2, 35: 0.868, 50: 0.641, 70: 0.443, 95: 0.32, 120: 0.253, 150: 0.206, 185: 0.164, 240: 0.125, 300: 0.1, 400: 0.0778, 500: 0.0605, 630: 0.0469, 800: 0.0367, 1000: 0.0291};
+
+const cab_cu_air = {1.5:{A:28,B:25,C:24,D:29,E:28,F:26,G:23},2.5:{A:37,B:34,C:33,D:39,E:38,F:36,G:32},4:{A:52,B:44,C:43,D:54,E:53,F:49,G:42},6:{A:66,B:55,C:52,D:68,E:67,F:63,G:54},10:{A:91,B:79,C:75,D:93,E:92,F:86,G:75},16:{A:118,B:110,C:107,D:120,E:119,F:115,G:100},25:{A:161,B:141,C:135,D:182,E:161,F:149,G:127},35:{A:200,B:176,C:169,D:226,E:201,F:185,G:157},50:{A:242,B:215,C:207,D:275,E:246,F:225,G:192},70:{A:310,B:279,C:268,D:353,E:318,F:289,G:246},95:{A:377,B:341,C:328,D:430,E:389,F:352,G:298},120:{A:437,B:399,C:382,D:500,E:454,F:410,G:346},150:{A:504,B:462,C:443,D:577,E:527,F:473,G:399},185:{A:575,B:531,C:509,D:661,E:605,F:542,G:456},240:{A:679,B:631,C:604,D:781,E:719,F:641,G:538},300:{A:783,B:731,C:699,D:902,E:833,F:741,G:620},400:{A:940,B:880,C:839,D:1085,E:1008},500:{A:1083,B:1006,C:958,D:1253,E:1169},630:{A:1254,B:1117,C:1077,D:1454,E:1362},800:{A:1460,B:1262,C:1152,D:1696,E:1595},1000:{A:1683,B:1432,C:1240,D:1958,E:1847}};
+const cab_al_air = {2.5:{F:28,G:24},4:{F:38,G:32},6:{F:49,G:42},10:{F:67,G:58},16:{F:91,G:77},25:{A:121,B:107,C:103,D:138,E:122,F:108,G:97},35:{A:150,B:135,C:129,D:172,E:153,F:135,G:120},50:{A:184,B:165,C:159,D:210,E:188,F:164,G:146},70:{A:237,B:215,C:206,D:271,E:244,F:211,G:187},95:{A:289,B:264,C:253,D:332,E:300,F:257,G:227},120:{A:337,B:308,C:296,D:387,E:351,F:300,G:263},150:{A:389,B:358,C:343,D:448,E:408,F:346,G:304},185:{A:447,B:413,C:395,D:515,E:470,F:397,G:347},240:{A:530,B:492,C:471,D:611,E:561,F:470,G:409},300:{A:613,B:571,C:547,D:708,E:652,F:543,G:471},400:{B:694,D:856,E:792,F:740,G:663},500:{B:806,D:991,E:921,F:856,G:770},630:{B:942,D:1154,E:1077,F:996,G:899}};
+const cu_ground_direct = {16:{A:142,B:135,C:140,D:115},25:{A:185,B:172,C:180,D:150},35:{A:226,B:208,C:215,D:180},50:{A:275,B:235,C:255,D:215},70:{A:340,B:290,C:315,D:265},95:{A:405,B:345,C:380,D:315},120:{A:460,B:390,C:430,D:360},150:{A:510,B:435,C:480,D:405},185:{A:580,B:490,C:540,D:460},240:{A:670,B:560,C:630,D:530},300:{A:750,B:630,C:700,D:590},400:{A:830,B:700},500:{A:910,B:770},630:{A:1000,B:840},800:{A:1117,B:931},1000:{A:1254,B:1038}};
+const cu_ground_pipe = {16:{A:140,B:130,C:115,D:94},25:{A:180,B:170,C:145,D:125},35:{A:215,B:205,C:175,D:150},50:{A:255,B:235,C:210,D:175},70:{A:310,B:280,C:260,D:215},95:{A:365,B:330,C:310,D:260},120:{A:410,B:370,C:355,D:300},150:{A:445,B:405,C:400,D:335},185:{A:485,B:440,C:455,D:380},240:{A:550,B:500,C:520,D:440},300:{A:610,B:550,C:590,D:495},400:{A:640,B:580},500:{A:690,B:620},630:{A:750,B:670},800:{A:828,B:735},1000:{A:919,B:811}};
+const al_ground_direct = {16:{A:108,B:103,C:106,D:87},25:{A:141,B:131,C:137,D:114},35:{A:172,B:158,C:163,D:137},50:{A:209,B:179,C:194,D:163},70:{A:259,B:220,C:239,D:201},95:{A:308,B:262,C:289,D:239},120:{A:350,B:296,C:327,D:274},150:{A:388,B:331,C:365,D:308},185:{A:441,B:372,C:410,D:350},240:{A:509,B:426,C:479,D:403},300:{A:570,B:479,C:532,D:449},400:{A:631,B:532},500:{A:692,B:585},630:{A:760,B:638},800:{A:849,B:707},1000:{A:953,B:789}};
+const al_ground_pipe = {16:{A:106,B:99,C:87,D:71},25:{A:137,B:129,C:110,D:95},35:{A:163,B:156,C:133,D:114},50:{A:194,B:179,C:160,D:133},70:{A:236,B:213,C:198,D:163},95:{A:277,B:251,C:236,D:198},120:{A:312,B:281,C:270,D:228},150:{A:338,B:308,C:304,D:255},185:{A:369,B:334,C:346,D:289},240:{A:418,B:380,C:395,D:334},300:{A:464,B:418,C:448,D:376},400:{A:486,B:441},500:{A:524,B:471},630:{A:570,B:509},800:{A:629,B:559},1000:{A:698,B:616}};
+
+const installation_methods_dict = {
+    "2 cáp tiếp xúc (2-single core touching)": {"letter": "A", "phases": ["1 pha"]},
+    "3 cáp tiếp xúc (3-single core touching)": {"letter": "B", "phases": ["3 pha"]},
+    "3 cáp đặt theo hình 3 lá (3-single core trefoil)": {"letter": "C", "phases": ["3 pha"]},
+    "3 cáp đặt cách khoảng theo mặt phẳng ngang (3-single core spaced horizontal)": {"letter": "D", "phases": ["3 pha"]},
+    "3 cáp đặt cách khoảng theo mặt phẳng đứng (3-single core spaced vertical)": {"letter": "E", "phases": ["3 pha"]},
+    "Cáp 2 lõi (Multicore cable - 2 loaded core)": {"letter": "F", "phases": ["1 pha"]},
+    "Cáp 3 lõi (Multicore cable - 3 loaded core)": {"letter": "G", "phases": ["3 pha"]}
+};
+const underground_method_mapping = {
+    "3 pha": {"Cáp đơn xếp đặt cách khoảng (Single core spaced)": "A", "3 cáp tiếp xúc nhau theo hình ba lá (Trefoil touching)": "B", "3 và 4 lõi thành một bó (Three and four core)": "D"},
+    "1 pha": {"2 cáp đơn xếp đặt cách khoảng (Two cables spaced)": "A", "Cáp 2 lõi đặt chung lớp (Two core multicore)": "C"}
+};
+
+const reduction_factors_air = {"Bunched in air": [1.00, 0.80, 0.70, 0.65, 0.60, 0.57, 0.54, 0.52, 0.50, 0.45, 0.41, 0.38], "Single layer on wall": [1.00, 0.85, 0.79, 0.75, 0.73, 0.72, 0.72, 0.71, 0.70], "Single layer under wooden ceiling": [0.95, 0.81, 0.72, 0.68, 0.66, 0.64, 0.63, 0.62, 0.61], "Single layer on perforated tray": [1.00, 0.88, 0.82, 0.77, 0.75, 0.73, 0.73, 0.72, 0.72], "Single layer on ladder": [1.00, 0.87, 0.82, 0.80, 0.79, 0.79, 0.79, 0.78, 0.78]};
+const k4_ground_grouping_factors = {"Các mạch đặt sát nhau (a = 0)": [1.00, 0.75, 0.65, 0.60, 0.55, 0.50, 0.45, 0.43, 0.40], "Cách nhau bằng 1 đường kính cáp (a = 1 sđ)": [1.00, 0.85, 0.75, 0.70, 0.65, 0.60, 0.60, 0.55, 0.55], "Cách nhau 0.25 m (a = 0.25m)": [1.00, 0.90, 0.80, 0.75, 0.75, 0.70, 0.70, 0.70, 0.70], "Cách nhau 0.50 m (a = 0.50m)": [1.00, 0.95, 0.85, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80]};
+const k2_soil_thermal_factors = {"Đất rất ẩm (Very wet soil)": 1.21, "Đất ẩm (Wet soil)": 1.13, "Đất ẩm vừa (Damp soil)": 1.05, "Đất khô tiêu chuẩn (Dry soil)": 1.00, "Đất rất khô nghèo nhiệt (Very dry soil)": 0.86};
+const k3_depth_factors = {"Chôn tiêu chuẩn (0.70 m - 0.80 m)": 1.00, "Chôn nông (0.50 m)": 1.02, "Chôn sâu (1.00 m)": 0.97, "Chôn rất sâu (1.25 m)": 0.95, "Chôn đặc biệt (1.50 m)": 0.93};
+const k1_factors = {"PVC": {10: 1.22, 15: 1.17, 20: 1.12, 25: 1.06, 30: 1.00, 35: 0.94, 40: 0.87, 45: 0.79, 50: 0.71, 55: 0.61, 60: 0.50}, "XLPE/EPR": {10: 1.15, 15: 1.12, 20: 1.08, 25: 1.04, 30: 1.00, 35: 0.96, 40: 0.91, 45: 0.87, 50: 0.82, 55: 0.76, 60: 0.71, 65: 0.65, 70: 0.58, 75: 0.50, 80: 0.41}};
+const k1_temperature_ground_factors = {"PVC": {10: 1.10, 15: 1.05, 20: 1.00, 25: 0.95, 30: 0.89, 35: 0.84, 40: 0.77, 45: 0.71, 50: 0.63, 55: 0.55, 60: 0.45}, "XLPE/EPR": {10: 1.07, 15: 1.04, 20: 1.00, 25: 0.96, 30: 0.93, 35: 0.89, 40: 0.85, 45: 0.80, 50: 0.76, 55: 0.71, 60: 0.65, 65: 0.60, 70: 0.53, 75: 0.46, 80: 0.38}};
+
+// Biến lưu trữ kết quả
+let currentResult = null;
+
+window.onload = function() {
+    let fa = document.getElementById("fixed_area_val");
+    standard_sizes.forEach(s => fa.add(new Option(s, s)));
+    fa.selectedIndex = 4; // Default 10mm2
+    
+    document.getElementById("deltaV_allow").addEventListener('input', function() {
+        document.getElementById("lbl_dv").innerText = parseFloat(this.value).toFixed(1);
+    });
+    
+    initDictionariesToDOM();
+    updateSystemRelated(); 
+}
+
+function openModal() {
+    if(!currentResult) return;
+    document.getElementById("pdfModal").style.display = "block";
+}
+function closeModal() {
+    document.getElementById("pdfModal").style.display = "none";
+}
+window.onclick = function(event) {
+    let modal = document.getElementById("pdfModal");
+    if (event.target == modal) modal.style.display = "none";
+}
+
+function initDictionariesToDOM() {
+    let air_arr = document.getElementById("air_arr");
+    air_arr.innerHTML = ""; Object.keys(reduction_factors_air).forEach(k => air_arr.add(new Option(k, k)));
+    let ground_arr = document.getElementById("ground_arr");
+    ground_arr.innerHTML = ""; Object.keys(k4_ground_grouping_factors).forEach(k => ground_arr.add(new Option(k, k)));
+    let soil_type = document.getElementById("soil_type");
+    soil_type.innerHTML = ""; Object.keys(k2_soil_thermal_factors).forEach(k => soil_type.add(new Option(k, k)));
+    soil_type.selectedIndex = 3; 
+    let depth_type = document.getElementById("depth_type");
+    depth_type.innerHTML = ""; Object.keys(k3_depth_factors).forEach(k => depth_type.add(new Option(k, k)));
+    depth_type.selectedIndex = 0; 
+}
+
+function updateSystemRelated() {
+    let sysType = document.getElementById("system_type").value;
+    document.getElementById("voltage").value = sysType === "3 pha" ? "400" : "230";
+    let air_mc = document.getElementById("air_method_choice"); air_mc.innerHTML = "";
+    Object.keys(installation_methods_dict).filter(k => installation_methods_dict[k].phases.includes(sysType)).sort().forEach(k => air_mc.add(new Option(k, k)));
+    let ground_mc = document.getElementById("ground_method_choice"); ground_mc.innerHTML = "";
+    Object.keys(underground_method_mapping[sysType]).forEach(k => ground_mc.add(new Option(k, k)));
+    updateDropdowns(); 
+}
+
+function toggleLoadInput() {
+    const val = document.querySelector('input[name="input_type"]:checked').value;
+    document.getElementById("div_p").classList.toggle("hidden", val !== "P");
+    document.getElementById("div_s").classList.toggle("hidden", val !== "S");
+    document.getElementById("div_i").classList.toggle("hidden", val !== "I");
+}
+
+function toggleEnv() {
+    const isAir = document.getElementById("cable_routing").value === "Đi trên không/thang máng";
+    document.getElementById("block_air").classList.toggle("hidden", !isAir);
+    document.getElementById("block_ground").classList.toggle("hidden", isAir);
+    updateDynamicK();
+}
+
+function updateDropdowns() {
+    const insul = document.getElementById("insul_material").value;
+    let a_temp = document.getElementById("air_temp"); a_temp.innerHTML = "";
+    Object.keys(k1_factors[insul]).map(Number).sort((a,b)=>a-b).forEach(k => {
+        a_temp.add(new Option(k, k)); if(k==40) a_temp.selectedIndex = a_temp.options.length - 1; 
+    });
+    let g_temp = document.getElementById("ground_temp"); g_temp.innerHTML = "";
+    Object.keys(k1_temperature_ground_factors[insul]).map(Number).sort((a,b)=>a-b).forEach(k => {
+        g_temp.add(new Option(k, k)); if(k==20) g_temp.selectedIndex = g_temp.options.length - 1;
+    });
+    updateDynamicK();
+}
+
+function toggleConstraint() {
+    document.getElementById("fixed_num_val").disabled = !document.getElementById("fix_num_cables").checked;
+    document.getElementById("fixed_area_val").disabled = !document.getElementById("fix_area").checked;
+    updateDynamicK();
+}
+
+function computeK(n) {
+    let routing = document.getElementById("cable_routing").value;
+    let insul = document.getElementById("insul_material").value;
+    if(routing === "Đi trên không/thang máng") {
+        let list = reduction_factors_air[document.getElementById("air_arr").value];
+        let k4 = list[Math.min(n - 1, list.length - 1)];
+        let k1 = k1_factors[insul][parseInt(document.getElementById("air_temp").value)] || 1.0;
+        return k1 * k4;
+    } else {
+        let list = k4_ground_grouping_factors[document.getElementById("ground_arr").value];
+        let k4 = list[Math.min(n - 1, list.length - 1)];
+        let k1 = k1_temperature_ground_factors[insul][parseInt(document.getElementById("ground_temp").value)] || 1.0;
+        let k2 = k2_soil_thermal_factors[document.getElementById("soil_type").value] || 1.0;
+        let k3 = k3_depth_factors[document.getElementById("depth_type").value] || 1.0;
+        return k1 * k2 * k3 * k4;
+    }
+}
+
+function updateDynamicK() {
+    let fixN = document.getElementById("fix_num_cables").checked;
+    let ref_n = fixN ? parseInt(document.getElementById("fixed_num_val").value) : 1;
+    let K = computeK(ref_n);
+    document.getElementById("dynamic_k_display").innerText = `📊 Hệ số K áp dụng (Xác định cho cấu hình ${ref_n} mạch): ${K.toFixed(4)}`;
+}
+
+function calcNeutral(area, num, condType) {
+    let tot_phase = area * num;
+    let limit = condType === "Copper" ? 16.0 : 25.0;
+    let req = tot_phase <= limit ? tot_phase : tot_phase / 2.0;
+    let idx = standard_sizes.indexOf(area);
+    let allowed = idx !== -1 ? standard_sizes.slice(Math.max(0, idx - 2), Math.min(standard_sizes.length - 1, idx + 1) + 1) : standard_sizes;
+    
+    let bestA = area, bestN = num, minA = Infinity;
+    for(let s of allowed) {
+        let count = Math.ceil(req / s);
+        if(s * count >= req && (s * count < minA || (s * count === minA && count < bestN))) {
+            minA = s * count; bestA = s; bestN = count;
+        }
+    }
+    return {n: bestN, a: bestA};
+}
+
+function runCalculation() {
+    document.getElementById("result_zone").style.display = "block";
+    let err = document.getElementById("error_msg"); let content = document.getElementById("success_content");
+    err.style.display = "none"; content.innerHTML = ""; document.getElementById("btn_open_modal").style.display = "none";
+
+    let sysType = document.getElementById("system_type").value;
+    let U = parseFloat(document.getElementById("voltage").value);
+    let cosPhi = parseFloat(document.getElementById("cos_phi").value);
+    let cond = document.getElementById("conductor_type").value;
+    let kDuTru = parseFloat(document.getElementById("k_du_tru").value);
+    let len = parseFloat(document.getElementById("length").value);
+    let dVAllow = parseFloat(document.getElementById("deltaV_allow").value);
+    let U_phase = sysType === "3 pha" ? U/Math.sqrt(3) : U;
+
+    let inType = document.querySelector('input[name="input_type"]:checked').value;
+    let Itt = 0; let loadStr = "";
+    if(inType === "P") {
+        let P = parseFloat(document.getElementById("val_p").value);
+        loadStr = P + " kW";
+        Itt = sysType === "3 pha" ? (P*1000)/(Math.sqrt(3)*U*cosPhi) : (P*1000)/(U*cosPhi);
+    } else if(inType === "S") {
+        let S = parseFloat(document.getElementById("val_s").value);
+        loadStr = S + " kVA";
+        Itt = sysType === "3 pha" ? (S*1000)/(Math.sqrt(3)*U) : (S*1000)/U;
+    } else {
+        Itt = parseFloat(document.getElementById("val_i").value);
+        loadStr = Itt + " A";
+    }
+
+    if(Itt <= 0) { err.innerHTML = "⚠️ Vui lòng cấu hình dữ liệu thông số tải > 0."; err.style.display="block"; return; }
+    let Itt_cb = Itt;
+
+    let routing = document.getElementById("cable_routing").value;
+    let isAir = routing === "Đi trên không/thang máng";
+    let insul = document.getElementById("insul_material").value;
+    
+    let methodKey = "", table = {}, srcName = "", methodDisplay = "";
+    if(isAir) {
+        let mc = document.getElementById("air_method_choice").value;
+        methodKey = installation_methods_dict[mc].letter; methodDisplay = mc;
+        table = cond==="Copper" ? cab_cu_air : cab_al_air;
+        srcName = "Bảng catalogue tiêu chuẩn (Cáp " + (cond==="Copper"?"đồng":"nhôm") + " trên không)";
+    } else {
+        let mc = document.getElementById("ground_method_choice").value;
+        methodKey = underground_method_mapping[sysType][mc]; methodDisplay = mc;
+        table = cond==="Copper" ? (routing.includes("trực tiếp")?cu_ground_direct:cu_ground_pipe) : (routing.includes("trực tiếp")?al_ground_direct:al_ground_pipe);
+        srcName = "TCVN 7447-5-52 - " + routing;
+    }
+
+    let fixN = document.getElementById("fix_num_cables").checked;
+    let fixA = document.getElementById("fix_area").checked;
+    let fixV = document.getElementById("fix_deltaV").checked;
+    let search_num = fixN ? [parseInt(document.getElementById("fixed_num_val").value)] : Array.from({length: 12}, (_, i) => i + 1);
+    let search_area = fixA ? [parseFloat(document.getElementById("fixed_area_val").value)] : standard_sizes;
+
+    let valids = []; let r_phys = cond==="Copper"?res_cu:res_al;
+
+    for(let n of search_num) {
+        let K_n = computeK(n); if(K_n <= 0) continue;
+        for(let a of search_area) {
+            if(table[a] && table[a][methodKey]) {
+                let amp = table[a][methodKey]; let Iz = amp * K_n; let Izt = Iz * n;
+                if(Izt >= Itt_cb) {
+                    let R0 = r_phys[a] || 0.01; let tf = insul.includes("XLPE") ? 90 : 70;
+                    let alpha = cond==="Copper" ? 0.00393 : 0.00403; let rt = R0 * (1 + alpha*(tf-20));
+                    let dU = sysType==="3 pha" ? Math.sqrt(3)*Itt*(rt/1000.0)*len*cosPhi/n : 2.0*Itt*(rt/1000.0)*len*cosPhi/n;
+                    let dUp = (dU/U)*100.0;
+                    if(!fixV || dUp <= dVAllow) valids.push({a:a, n:n, K:K_n, amp:amp, Iz:Iz, Izt:Izt, dU:dU, dUp:dUp, rt:rt, tf:tf, tot:n*a});
+                }
+            }
+        }
+    }
+
+    if(valids.length === 0) {
+        err.innerHTML = "❌ Không tìm thấy cáp thỏa mãn điều kiện."; err.style.display="block"; return;
+    }
+
+    valids.sort((x,y) => x.tot !== y.tot ? x.tot - y.tot : (x.n !== y.n ? x.n - y.n : x.a - y.a));
+    let best = valids[0]; let neut = calcNeutral(best.a, best.n, cond);
+
+    let sba = parseFloat(document.getElementById("s_ba").value);
+    let uk = parseFloat(document.getElementById("u_k").value);
+    let Zba = (uk/100.0) * Math.pow(U,2) / (sba*1000.0);
+    let Rba = 0.2 * Zba; let Xba = Math.sqrt(Math.max(0.0, Zba*Zba - Rba*Rba));
+    
+    let Rp = (r_phys[best.a]||0.01)/1000.0 * len / best.n; let Xp = 0.08/1000.0 * len / best.n;
+    let Rn = (r_phys[neut.a]||0.01)/1000.0 * len / neut.n; let Xn = 0.08/1000.0 * len / neut.n;
+
+    let Z3 = Math.sqrt(Math.pow(Rba+Rp,2) + Math.pow(Xba+Xp,2));
+    let Ik3 = Z3>0 ? U/(Math.sqrt(3)*Z3) : 0.0; let Ik2 = Z3>0 ? (U/2.0)/Z3 : 0.0;
+    let Z1 = Math.sqrt(Math.pow(Rba+Rp+Rn,2) + Math.pow(Xba+Xp+Xn,2));
+    let Ik1 = Z1>0 ? U_phase/Z1 : 0.0;
+
+    let cb_list = sysType==="1 pha"?cb_table_1p:cb_table_3p;
+    let is_over_1000A = false; let temp_In = cb_list.find(x => x >= Itt_cb) || cb_list[cb_list.length-1];
+    let sel_In = temp_In; let sel_k = 1.0; let sel_Ir = temp_In;
+
+    if (temp_In > 1000) {
+        is_over_1000A = true; let k_opts = [1.0, 0.98, 0.95, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4]; let valids_cb = [];
+        for (let inv of cb_list) {
+            if (inv > 1000) {
+                for (let kv of k_opts) {
+                    let irv = inv * kv; if (irv >= Itt_cb && irv <= best.Izt) valids_cb.push({In: inv, k: kv, Ir: irv, diff: Math.abs(irv - Itt_cb)});
+                }
+            }
+        }
+        if (valids_cb.length > 0) {
+            valids_cb.sort((a,b) => a.In !== b.In ? a.In - b.In : a.diff - b.diff);
+            sel_In = valids_cb[0].In; sel_k = valids_cb[0].k; sel_Ir = valids_cb[0].Ir;
+        }
+    }
+
+    let reqIcu = (Ik3/1000.0) * 1.25; let sel_Icu = market_icu.find(x => x >= reqIcu) || market_icu[market_icu.length-1];
+    let cb_display = ` Chọn CB có dòng định mức là <b>${sel_In} A</b> `;
+    if(is_over_1000A && sel_k < 1.0) cb_display += `(Có thể áp dụng chỉnh định hệ số k = ${sel_k} → Dòng bảo vệ nhiệt thực tế I<sub>r</sub> = ${sel_Ir.toFixed(2)} A)`;
+
+    let min_N_req = best.tot > (cond==='Copper'?16.0:25.0) ? best.tot/2.0 : best.tot;
+
+    // Lưu dữ liệu để Export PDF
+    currentResult = {
+        loadStr: loadStr, sysType: sysType, insul: insul, length: len, routing: routing,
+        methodKey: methodKey, methodDisplay: methodDisplay, cond: cond,
+        temp_factor: (isAir ? k1_factors[insul][document.getElementById("air_temp").value] : k1_temperature_ground_factors[insul][document.getElementById("ground_temp").value]) || 1.0,
+        soil_factor: (!isAir) ? k2_soil_thermal_factors[document.getElementById("soil_type").value] : "-",
+        depth_factor: (!isAir) ? k3_depth_factors[document.getElementById("depth_type").value] : "-",
+        touch_factor: (isAir) ? reduction_factors_air[document.getElementById("air_arr").value][best.n-1] : k4_ground_grouping_factors[document.getElementById("ground_arr").value][best.n-1],
+        overall_K: best.K.toFixed(4), Iz_total: best.Izt.toFixed(2), Iz_single: best.Iz.toFixed(2),
+        phase_cable: `${best.n}x${best.a}`, n_cable: `${neut.n}x${neut.a}`,
+        Ik3_str: Ik3>=1000 ? (Ik3/1000.0).toFixed(3)+" kA" : Ik3.toFixed(1)+" A",
+        Ik2_str: Ik2>=1000 ? (Ik2/1000.0).toFixed(3)+" kA" : Ik2.toFixed(1)+" A",
+        Ik1_str: Ik1>=1000 ? (Ik1/1000.0).toFixed(3)+" kA" : Ik1.toFixed(1)+" A",
+        dU_val: best.dU.toFixed(2), dU_percent: best.dUp.toFixed(3), dU_limit: dVAllow.toFixed(2),
+        rt_val: best.rt.toFixed(4), t_fixed: best.tf.toFixed(1),
+        Itt_cb: Itt_cb.toFixed(2), cb_In: sel_In, cb_Icu: sel_Icu
+    };
+
+    let html = `
+    <h4>📊 A. Thông số kỹ thuật & Đề xuất cáp cho hệ thống (Theo TCVN 7447-5-52)</h4>
+    <div style="color: #0F172A; line-height: 1.6; margin-bottom: 15px;">
+        • Dòng điện phụ tải tính toán thực tế (I<sub>tt</sub>): <b>${Itt.toFixed(2)} A</b><br>
+        • Hệ số dự trữ cấu hình (k<sub>dự trữ</sub>): <b>${kDuTru.toFixed(2)}</b><br>
+        • Dòng thiết kế phối hợp bảo vệ yêu cầu (I<sub>tt_cb</sub> = I<sub>tt</sub>): <b>${Itt_cb.toFixed(2)} A</b><br>
+        • Hệ số hiệu chỉnh môi trường áp dụng (K): <b>${best.K.toFixed(4)}</b><br>
+        • Khả năng chịu dòng thực tế sau hiệu chỉnh của 1 sợi cáp (I<sub>z</sub>): <b>${best.Iz.toFixed(2)} A</b> (Dòng gốc bảng tra: ${best.amp} A)<br>
+        • Tổng khả năng mang dòng cực đại của mạch chạy song song (${best.n} sợi): <b>${best.Izt.toFixed(2)} A</b><br>
+        • Tổng tiết diện pha thiết kế: <b>${best.n} sợi x ${best.a} mm² = ${best.tot} mm²</b><br>
+        • Yêu cầu tiết diện trung tính tối thiểu: <b>${min_N_req} mm²</b>
+    </div>
+    
+    <div class="success-box">
+        🎉 ĐỀ XUẤT TIẾT DIỆN CÁP:<br><br>
+        • 🔥 <b>Cáp Pha</b> (${cond==="Copper"?"Đồng (Cu)":"Nhôm (Al)"}): <b>${best.n} sợi x ${best.a} mm²</b> <i>(Tổng thiết kế ${best.tot} mm²)</i><br><br>
+        • ⚪ <b>Cáp Trung Tính (N)</b>: <b>${neut.n} sợi x ${neut.a} mm²</b> <i>(Tổng thực tế ${neut.n * neut.a} mm²)</i><br><br>
+        👉 <i>Nguồn dữ liệu gốc tra cứu bảng: <b>${srcName}</b> (Cấu hình mã hàng: ${methodKey})</i>
+    </div>
+
+    <hr style="border: 0.5px solid #E2E8F0; margin: 20px 0;">
+    <h4>📉 B. Kiểm tra điều kiện sụt áp đường dây</h4>
+    <div class="grid-3" style="margin-bottom:15px;">
+        <div class="metric-box"><div class="metric-label">Độ sụt áp tính toán (ΔU)</div><div class="metric-value">${best.dU.toFixed(2)} V</div></div>
+        <div class="metric-box"><div class="metric-label">Nhiệt độ lõi cố định để tính</div><div class="metric-value">${best.tf.toFixed(1)} °C</div></div>
+        <div class="metric-box"><div class="metric-label">Điện trở ở ${best.tf.toFixed(1)}°C (Rt)</div><div class="metric-value">${best.rt.toFixed(4)} Ω/km</div></div>
+    </div>
+    <div class="grid-3" style="margin-bottom:15px;">
+        <div class="metric-box"><div class="metric-label">Giới hạn sụt áp cho phép</div><div class="metric-value">${dVAllow.toFixed(2)} %</div></div>
+        <div class="metric-box"><div class="metric-label">Tỷ lệ sụt áp thực tế</div><div class="metric-value">${best.dUp.toFixed(2)} %</div></div>
+    </div>
+    ${best.dUp <= dVAllow ? `<div class="success-box">✅ <b>ĐẠT ĐIỀU KIỆN SỤT ÁP</b>: Sụt áp đường dây (${best.dUp.toFixed(2)}%) nằm trong giới hạn cho phép.</div>` : `<div class="error-box">❌ <b>KHÔNG ĐẠT ĐIỀU KIỆN SỤT ÁP</b>: Độ sụt áp (${best.dUp.toFixed(2)}%) vượt quá mức cho phép.</div>`}
+
+    <hr style="border: 0.5px solid #E2E8F0; margin: 20px 0;">
+    <h4>⚡ C. Kết quả tính toán ngắn mạch tại cuối tuyến cáp</h4>
+    <div style="font-size:12px; color:#64748B; margin-bottom:10px;">📖 <i>Tham khảo tài liệu: Cahier Technique no.158: Calculation of short-circuit currents, Schneider Electric.</i></div>
+    <div class="grid-3">
+        <div class="metric-box"><div class="metric-label">⚡ Ngắn mạch 3 pha Cực đại (I_k³)</div><div class="metric-value">${Ik3>=1000 ? (Ik3/1000.0).toFixed(3)+" kA" : Ik3.toFixed(1)+" A"}</div></div>
+        <div class="metric-box"><div class="metric-label">⚡ Ngắn mạch 2 pha (I_k²)</div><div class="metric-value">${Ik2>=1000 ? (Ik2/1000.0).toFixed(3)+" kA" : Ik2.toFixed(1)+" A"}</div></div>
+        <div class="metric-box"><div class="metric-label">⚡ Ngắn mạch 1 pha P-N (I_k¹)</div><div class="metric-value">${Ik1>=1000 ? (Ik1/1000.0).toFixed(3)+" kA" : Ik1.toFixed(1)+" A"}</div></div>
+    </div>
+
+    <br>
+    <h4>🛑 D. Đề xuất cấu hình chi tiết cho CB</h4>
+    <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; padding: 18px; border-radius: 6px; margin-bottom: 12px; line-height: 1.6; color: #0F172A;">
+        <b style="color: #0066CC; font-size: 16px;">📊 Cơ sở chọn dòng định mức của CB (I<sub>n</sub>):</b><br>
+        • Dòng điện tính toán kiểm tra phối hợp: <b>I<sub>tt</sub> = ${Itt_cb.toFixed(2)} A</b><br>
+        • Tổng khả năng mang dòng của cáp: <b>I<sub>z_total</sub> = ${best.Izt.toFixed(2)} A</b><br>
+        • Tiêu chuẩn kiểm tra phối hợp bảo vệ: <b>I<sub>tt</sub> ≤ I<sub>r</sub> ≤ I<sub>z_total</sub></b><br>
+        • 👉 Định hướng:${cb_display}
+    </div>
+
+    <div class="final-conclusion">
+        📌 Kết luận thiết bị: Lựa chọn dòng định mức CB là ${sel_In} A và Khả năng cắt ngắn mạch là ${sel_Icu} kA
+    </div>
+    <div style="font-size:12px; color:#64748B; margin-top:10px;">💡 <i>Ghi chú kỹ thuật: Khả năng cắt Icu được đề xuất dựa trên các dòng sản phẩm thiết bị đóng cắt thực tế phổ biến trên thị trường hiện nay.</i></div>
+    <br>
+    <p style='font-size:12px; color: #64748B; text-align:center;'>💡 Kết quả tính toán chỉ mang tính tham khảo. Vui lòng kiểm tra lại thông số thiết bị trước khi áp dụng thực tế.</p>
+    `;
+
+    content.innerHTML = html;
+    document.getElementById("btn_open_modal").style.display = "block";
+}
+
+// ============================================================================
+// HÀM TẢI FONT CHỮ BẰNG API FETCH ĐỂ NHÚNG VÀO PDF
+// ============================================================================
+async function fetchFontBase64(url) {
+    const res = await fetch(url);
+    const buf = await res.arrayBuffer();
+    let binary = '';
+    const bytes = new Uint8Array(buf);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+}
+
+// ============================================================================
+// XUẤT PDF TRỰC TIẾP TỪ DỮ LIỆU SỬ DỤNG jsPDF & jsPDF-AutoTable (Native PDF)
+// ============================================================================
+async function generatePDF() {
+    if(!currentResult) return;
+    
+    let btnConfirm = document.getElementById("btn_confirm_pdf");
+    let originalText = btnConfirm.innerHTML;
+    btnConfirm.innerHTML = "⏳ ĐANG XUẤT PDF TRỰC TIẾP...";
+    btnConfirm.disabled = true;
+
+    // Lấy thông tin
+    let engineerName = document.getElementById("pdf_engineer").value;
+    let projName = document.getElementById("pdf_project").value;
+    let companyName = document.getElementById("pdf_company").value;
+    let custName = document.getElementById("pdf_customer").value;
+    let feedName = document.getElementById("pdf_feeder").value;
+
+    let firstName = engineerName.split(' ')[0];
+    let lastName = engineerName.split(' ').slice(1).join(' ') || engineerName;
+
+    let now = new Date();
+    let timestamp = ("0" + now.getDate()).slice(-2) + "/" + ("0" + (now.getMonth() + 1)).slice(-2) + "/" + now.getFullYear() + " " + 
+                    now.toLocaleTimeString('en-US', {hour12: true, hour: '2-digit', minute:'2-digit', second:'2-digit'});
+
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // 1. Tải và thiết lập Font tiếng Việt (Roboto) từ thư viện mã nguồn mở CDN
+        const robotoRegular = await fetchFontBase64('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/fonts/Roboto/Roboto-Regular.ttf');
+        const robotoMedium = await fetchFontBase64('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/fonts/Roboto/Roboto-Medium.ttf');
+
+        doc.addFileToVFS("Roboto-Regular.ttf", robotoRegular);
+        doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
+        
+        doc.addFileToVFS("Roboto-Medium.ttf", robotoMedium);
+        doc.addFont("Roboto-Medium.ttf", "Roboto", "bold");
+        
+        doc.setFont("Roboto", "normal"); 
+
+        let startY = 35;
+        
+        // ================= VẼ Ô NOTICE =================
+        doc.setDrawColor(0, 0, 0);
+        doc.setLineWidth(0.8);
+        doc.rect(14, startY, 182, 45, 'D'); // Khung ngoài (Rút gọn chiều cao 45)
+        
+        doc.setFillColor(0, 102, 255); // Nền xanh của tiêu đề
+        doc.rect(14.4, startY + 0.4, 181.2, 7, 'F'); 
+        
+        doc.setFont("Roboto", "bold");
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(12);
+        doc.text("NOTICE", 105, startY + 5.2, { align: "center", fontStyle: 'italic' });
+        
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(11);
+        doc.text("RISK OF INACCURATE DATA RESULTS", 18, startY + 14);
+        
+        doc.setFont("Roboto", "normal");
+        doc.setFontSize(10);
+        doc.text("• Make sure that you have provided all the required inputs for the conductor sizing.", 22, startY + 22);
+        doc.text("• It is recommended to refer to the cable manufacturer's catalogue before making the selection.", 22, startY + 28);
+        
+        doc.setFont("Roboto", "bold");
+        doc.text("Failure to follow these instructions can result in incorrect bill of", 18, startY + 38);
+        doc.text("material and loss of business.", 18, startY + 43);
+        
+        // ================= MỤC LỤC =================
+        let tocY = startY + 55;
+        doc.setFontSize(14);
+        doc.setTextColor(0, 102, 204);
+        doc.text("Content", 14, tocY);
+        
+        doc.autoTable({
+            startY: tocY + 3,
+            theme: 'plain',
+            styles: { fontSize: 11, font: "Roboto", cellPadding: 2.5, textColor: 0 },
+            body: [
+                ['1. Information'],
+                ['2. Cable schedule'],
+                ['3. Calculation notes'],
+                ['    3.1. Cable & Environment Parameters'],
+                ['    3.2. Voltage Drop Check'],
+                ['    3.3. Short Circuit (IEC 60909)'],
+                ['4. Conclusion - Bill of Materials']
+            ],
+            margin: { left: 14, right: 14 }
+        });
+
+        // ================= NGẮT TRANG =================
+        doc.addPage();
+        
+        // ---- 1. INFORMATION ----
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        doc.setFillColor(238, 238, 238);
+        doc.rect(14, 35, 182, 8, 'F');
+        doc.setFont("Roboto", "bold");
+        doc.text("1. Information", 16, 40.5);
+        
+        doc.autoTable({
+            startY: 45,
+            theme: 'grid',
+            styles: { fontSize: 10, textColor: 0, font: "Roboto" },
+            columnStyles: { 0: { fontStyle: 'bold', fillColor: [250, 250, 250], cellWidth: 50 } },
+            body: [
+                ['Name:', lastName],
+                ['First name:', firstName],
+                ['Company:', companyName],
+                ['Customer:', custName]
+            ],
+            margin: { top: 35, bottom: 25, left: 14, right: 14 }
+        });
+
+        // ---- 2. CABLE SCHEDULE ----
+        let finalY = doc.lastAutoTable.finalY + 10;
+        doc.setFillColor(238, 238, 238);
+        doc.rect(14, finalY, 182, 8, 'F');
+        doc.setFontSize(12);
+        doc.setFont("Roboto", "bold");
+        doc.text("2. Cable schedule", 16, finalY + 5.5);
+        
+        doc.autoTable({
+            startY: finalY + 10,
+            theme: 'grid',
+            headStyles: { fillColor: [221, 221, 221], textColor: 0, fontStyle: 'bold', halign: 'center', valign: 'middle', font: "Roboto" },
+            styles: { fontSize: 9, textColor: 0, halign: 'center', valign: 'middle', font: "Roboto" },
+            head: [['Feeder', 'Load type', 'Load', 'Type Insulation', 'L', 'Active conductor', 'PE/PEN / N', 'dU']],
+            body: [
+                [
+                    feedName, 
+                    currentResult.sysType === "3 pha" ? "3Ph+N" : "1Ph+N",
+                    currentResult.loadStr,
+                    `Single-core\n${currentResult.insul.split('/')[0]}`,
+                    `${currentResult.length} m`,
+                    `${currentResult.phase_cable}\n${currentResult.cond}`,
+                    `${currentResult.n_cable}\n${currentResult.cond}`,
+                    `${currentResult.dU_percent}%`
+                ]
+            ],
+            margin: { top: 35, bottom: 25, left: 14, right: 14 }
+        });
+
+        // ---- 3. CABLE & ENVIRONMENT CALCULATION NOTES ----
+        finalY = doc.lastAutoTable.finalY + 10;
+        // Kiểm tra xem có cần ngắt trang không
+        if (finalY > 240) { doc.addPage(); finalY = 35; }
+        
+        doc.setFillColor(238, 238, 238);
+        doc.rect(14, finalY, 182, 8, 'F');
+        doc.setFontSize(12);
+        doc.setFont("Roboto", "bold");
+        doc.text("3. Calculation notes", 16, finalY + 5.5);
+
+        doc.autoTable({
+            startY: finalY + 10,
+            theme: 'grid',
+            styles: { fontSize: 9, textColor: 0, font: "Roboto" },
+            columnStyles: { 0: { cellWidth: 90, fillColor: [250, 250, 250], fontStyle: 'bold' } },
+            body: [
+                [{content: '3.1. Cable & Environment Parameters', colSpan: 2, fontStyle: 'bold', fillColor: [230, 230, 230]}],
+                ['Length', `${currentResult.length} m`],
+                ['Installation method', `${currentResult.methodKey} - ${currentResult.methodDisplay}`],
+                ['Insulation', currentResult.insul],
+                [{content: 'Correction factors according to IEC 60364-5-52', colSpan: 2, fontStyle: 'bold', fillColor: [240, 240, 240]}],
+                ['Temperature factor (k1)', currentResult.temp_factor.toString()],
+                ['Soil thermal resistivity factor (k2)', currentResult.soil_factor.toString()],
+                ['Depth factor (k3)', currentResult.depth_factor ? currentResult.depth_factor.toString() : "-"],
+                ['Touching conductor factor (k4)', currentResult.touch_factor.toString()],
+                [{content: 'Overall factor (K)', fontStyle: 'bold'}, {content: currentResult.overall_K.toString(), fontStyle: 'bold'}],
+                [{content: 'Selected active conductor', colSpan: 2, fontStyle: 'bold', fillColor: [240, 240, 240]}],
+                ['Cross section area', `${currentResult.phase_cable} mm2`],
+                ['Core', currentResult.cond],
+                ['Iz under real conditions', `${currentResult.Iz_total} A`]
+            ],
+            margin: { top: 35, bottom: 25, left: 14, right: 14 }
+        });
+
+        // ---- 3.2 & 3.3 VOLTAGE DROP & SHORT CIRCUIT ----
+        finalY = doc.lastAutoTable.finalY;
+        if (finalY > 240) { doc.addPage(); finalY = 35; }
+        
+        doc.autoTable({
+            startY: finalY + 5,
+            theme: 'grid',
+            styles: { fontSize: 9, textColor: 0, font: "Roboto" },
+            columnStyles: { 0: { cellWidth: 90, fillColor: [250, 250, 250], fontStyle: 'bold' } },
+            body: [
+                [{content: '3.2. Voltage Drop Check', colSpan: 2, fontStyle: 'bold', fillColor: [230, 230, 230]}],
+                [`Core temperature (steady state)`, `${currentResult.t_fixed} °C`],
+                [`Cable resistance Rt`, `${currentResult.rt_val} Ω/km`],
+                [`Calculated voltage drop`, `${currentResult.dU_val} V (${currentResult.dU_percent}%)`],
+                [`Maximum allowable voltage drop`, `${currentResult.dU_limit}%`],
+                
+                [{content: '3.3. Short Circuit', colSpan: 2, fontStyle: 'bold', fillColor: [230, 230, 230]}],
+                ['Max 3-phase short-circuit (Ik3)', currentResult.Ik3_str],
+                ['2-phase short-circuit (Ik2)', currentResult.Ik2_str],
+                ['Min 1-phase short-circuit (Ik1)', currentResult.Ik1_str],
+            ],
+            margin: { top: 35, bottom: 25, left: 14, right: 14 }
+        });
+
+        // ---- 4. CONCLUSION ----
+        finalY = doc.lastAutoTable.finalY + 10;
+        if (finalY > 240) { doc.addPage(); finalY = 35; }
+
+        doc.setFillColor(238, 238, 238);
+        doc.rect(14, finalY, 182, 8, 'F');
+        doc.setFontSize(12);
+        doc.setFont("Roboto", "bold");
+        doc.text("4. Conclusion - Bill of Materials", 16, finalY + 5.5);
+
+        doc.autoTable({
+            startY: finalY + 10,
+            theme: 'grid',
+            styles: { fontSize: 10, textColor: 0, font: "Roboto" },
+            columnStyles: { 0: { cellWidth: 90, fillColor: [250, 250, 250], fontStyle: 'bold' }, 1: { fontStyle: 'bold', textColor: [0, 102, 51] } },
+            body: [
+                ['Selected Phase Cable', `${currentResult.phase_cable} mm2 ${currentResult.cond} (${currentResult.insul})`],
+                ['Selected Neutral Cable', `${currentResult.n_cable} mm2 ${currentResult.cond} (${currentResult.insul})`],
+                ['Circuit Breaker Rating (In)', `${currentResult.cb_In} A`],
+                ['Short-Circuit Breaking Capacity (Icu)', `≥ ${currentResult.cb_Icu} kA`]
+            ],
+            margin: { top: 35, bottom: 25, left: 14, right: 14 }
+        });
+
+        // ---- HEADER & FOOTER CHO TOÀN BỘ CÁC TRANG ----
+        const pageCount = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            
+            // Header
+            doc.setFontSize(16);
+            doc.setTextColor(0, 102, 204);
+            doc.setFont("Roboto", "bold");
+            doc.text(companyName, 14, 20);
+            
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text("Cable Calculation Report", 196, 20, { align: "right" });
+            
+            doc.setLineWidth(0.5);
+            doc.setDrawColor(0, 0, 0);
+            doc.line(14, 23, 196, 23);
+            
+            doc.setFontSize(9);
+            doc.setTextColor(100, 100, 100);
+            doc.setFont("Roboto", "normal");
+            doc.text(`Project: ${projName} | ${timestamp}`, 14, 28);
+
+            // Footer
+            doc.setFontSize(7);
+            doc.setTextColor(150, 150, 150);
+            doc.setFont("Roboto", "italic");
+            doc.setLineWidth(0.1);
+            doc.setDrawColor(200, 200, 200);
+            doc.line(14, 278, 196, 278);
+            doc.text("This documentation is not intended as a substitute for and is not to be used for determining suitability or reliability of these products for specific user applications.", 14, 281);
+			doc.text("It is the duty of any such user or integrator to perform the appropriate and complete risk analysis, evaluation and testing of the products with respect to the relevant specific application", 14, 284);
+			doc.text("or use thereof.", 14, 287);
+            doc.text(`Project: ${projName} | Generated at: ${timestamp} | Page ${i}/${pageCount}`, 14, 290);
+        }
+
+        // Lưu PDF
+        let saveName = projName.replace(/\s+/g, '_') + '_Report.pdf';
+        doc.save(saveName);
+        
+        // Hoàn tất
+        btnConfirm.innerHTML = originalText;
+        btnConfirm.disabled = false;
+        closeModal();
+
+    } catch (error) {
+        console.error("Lỗi xuất PDF: ", error);
+        btnConfirm.innerHTML = originalText;
+        btnConfirm.disabled = false;
+        alert("Có lỗi xảy ra khi tạo PDF. Hãy đảm bảo bạn có kết nối mạng để hệ thống tải font chữ tiếng Việt.");
+    }
+}
+</script>
+</body>
+</html>
