@@ -7979,14 +7979,25 @@
 
         function generateExcel(data, meta) {
             const ws_data = [
-                ["PHIẾU YÊU CẦU CẤP VẬT TƯ", "", "", "", "", "", ""],
-                [`Số: ${meta.soPhieu}`, "", "", "", "", "", ""],
-                [`${meta.ngayStr}`, "", "", "", "", "", ""],
+                // Khối Header (Dòng 1 đến 3) - Phân bổ giống bố cục Flexbox trên PDF
+                ["[ LOGO VAS ]", "", "PHIẾU YÊU CẦU CẤP VẬT TƯ", "", "", "", ""],
+                ["", "", `Số: ${meta.soPhieu}`, "", "", "", ""],
+                ["", "", `${meta.ngayStr}`, "", "", "", ""],
+                
+                // Dòng trống cách điệu
+                ["", "", "", "", "", "", ""], 
+                
+                // Lý do đề nghị
                 [`Lý do đề nghị: ${meta.lydo}`, "", "", "", "", "", ""],
-                [""], 
+                
+                // Dòng trống cách điệu
+                ["", "", "", "", "", "", ""], 
+                
+                // Dòng tiêu đề bảng (Dòng 7)
                 ["STT", "HẠNG MỤC", "VẬT TƯ THIẾT BỊ", "QUY CÁCH KỸ THUẬT", "ĐVT", "SỐ LƯỢNG YÊU CẦU", "GHI CHÚ"]
             ];
 
+            // Đổ dữ liệu từ bảng vào
             data.forEach((item, index) => {
                 ws_data.push([
                     index + 1,
@@ -7999,48 +8010,74 @@
                 ]);
             });
 
+            // Lấy vị trí dòng hiện tại sau khi đổ xong dữ liệu bảng
             let currentRow = ws_data.length;
 
+            // Thêm các khoảng trắng trước khi tới phần chữ ký
             ws_data.push(["", "", "", "", "", "", ""]);
             ws_data.push(["", "", "", "", "", "", ""]);
 
-            ws_data.push(["", "Người lập biểu", "", "Phụ trách bộ phận", "", "Ban Giám đốc", ""]);
-            ws_data.push(["", "(Ký, ghi rõ họ tên)", "", "(Ký, ghi rõ họ tên)", "", "(Ký, ghi rõ họ tên)", ""]);
+            // Khối Chữ ký dàn đều 3 góc (Trái - Giữa - Phải)
+            ws_data.push(["Người lập biểu", "", "Phụ trách bộ phận", "", "", "Ban Giám đốc", ""]);
+            ws_data.push(["(Ký, ghi rõ họ tên)", "", "(Ký, ghi rõ họ tên)", "", "", "(Ký, ghi rõ họ tên)", ""]);
             
+            // Lùi khoảng trống cho người dùng ký tay
             ws_data.push(["", "", "", "", "", "", ""]);
             ws_data.push(["", "", "", "", "", "", ""]);
             ws_data.push(["", "", "", "", "", "", ""]);
             ws_data.push(["", "", "", "", "", "", ""]);
 
+            // Footer (Mã biểu mẫu)
             ws_data.push(["WH-P01-F06 (00-06/06/2024)", "", "", "", "", "", ""]);
 
             const ws = XLSX.utils.aoa_to_sheet(ws_data);
 
+            // Cấu hình gộp ô (Merge Cells) để định hình lại toàn bộ layout
             ws['!merges'] = [
-                { s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }, 
-                { s: { r: 1, c: 0 }, e: { r: 1, c: 6 } }, 
-                { s: { r: 2, c: 0 }, e: { r: 2, c: 6 } }, 
-                { s: { r: 3, c: 0 }, e: { r: 3, c: 6 } }, 
+                // Khối Header: Gộp ô cho khu vực Logo (Cột A -> B)
+                { s: { r: 0, c: 0 }, e: { r: 2, c: 1 } }, 
+                // Khối Header: Gộp ô cho Cụm Tiêu Đề (Cột C -> E)
+                { s: { r: 0, c: 2 }, e: { r: 0, c: 4 } }, 
+                { s: { r: 1, c: 2 }, e: { r: 1, c: 4 } }, 
+                { s: { r: 2, c: 2 }, e: { r: 2, c: 4 } }, 
+                
+                // Khối Lý do đề nghị: Trải dài từ Cột A -> G
+                { s: { r: 4, c: 0 }, e: { r: 4, c: 6 } }, 
 
-                { s: { r: currentRow + 2, c: 1 }, e: { r: currentRow + 2, c: 2 } }, 
-                { s: { r: currentRow + 2, c: 3 }, e: { r: currentRow + 2, c: 4 } }, 
+                // Khối Chữ ký - Phân bổ vị trí y hệt PDF
+                // Người lập biểu (Cột A -> B)
+                { s: { r: currentRow + 2, c: 0 }, e: { r: currentRow + 2, c: 1 } }, 
+                { s: { r: currentRow + 3, c: 0 }, e: { r: currentRow + 3, c: 1 } }, 
+                // Phụ trách bộ phận (Cột C -> E)
+                { s: { r: currentRow + 2, c: 2 }, e: { r: currentRow + 2, c: 4 } }, 
+                { s: { r: currentRow + 3, c: 2 }, e: { r: currentRow + 3, c: 4 } }, 
+                // Ban Giám đốc (Cột F -> G)
                 { s: { r: currentRow + 2, c: 5 }, e: { r: currentRow + 2, c: 6 } }, 
+                { s: { r: currentRow + 3, c: 5 }, e: { r: currentRow + 3, c: 6 } },  
 
-                { s: { r: currentRow + 3, c: 1 }, e: { r: currentRow + 3, c: 2 } }, 
-                { s: { r: currentRow + 3, c: 3 }, e: { r: currentRow + 3, c: 4 } }, 
-                { s: { r: currentRow + 3, c: 5 }, e: { r: currentRow + 3, c: 6 } }  
+                // Khối Footer
+                { s: { r: currentRow + 8, c: 0 }, e: { r: currentRow + 8, c: 2 } }
             ];
 
+            // Tinh chỉnh độ rộng cột sao cho nội dung không bị che khuất
             ws['!cols'] = [
-                {wch: 6}, {wch: 22}, {wch: 35}, {wch: 35}, {wch: 10}, {wch: 22}, {wch: 20}
+                {wch: 6},   // Cột A: STT
+                {wch: 22},  // Cột B: HẠNG MỤC
+                {wch: 35},  // Cột C: VẬT TƯ THIẾT BỊ
+                {wch: 35},  // Cột D: QUY CÁCH KỸ THUẬT
+                {wch: 10},  // Cột E: ĐVT
+                {wch: 22},  // Cột F: SỐ LƯỢNG YÊU CẦU
+                {wch: 20}   // Cột G: GHI CHÚ
             ];
 
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Phieu_Yeu_Cau");
             
-            const safeSoPhieu = meta.soPhieu.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'phieu_yeu_cau';
+            // Xử lý loại bỏ ký tự đặc biệt trong Số phiếu để làm tên file hợp lệ
+            const safeSoPhieu = meta.soPhieu.replace(/[^a-z0-9-]/gi, '_').toLowerCase() || 'phieu_yeu_cau';
             XLSX.writeFile(wb, `PhieuYeuCau_${safeSoPhieu}.xlsx`);
-            showToast("Đã tải xuống file Excel thành công!", "success");
+            
+            showToast("Đã tải xuống file Excel với Form chuẩn!", "success");
         }
 
         function generatePDF(data, meta) {
