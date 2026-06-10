@@ -23,23 +23,25 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-    <header class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white shadow-lg sticky top-0 z-50">
+    <header class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center space-x-3">
-                    <div class="p-2 bg-yellow-500 rounded-lg text-slate-950">
-                        <i class="fa-solid fa-solar-panel text-xl"></i>
+                    
+                    <div class="h-10 flex items-center justify-center">
+                        <img src="./images/VAS.png" alt="Logo VAS" class="h-full w-auto object-contain">
                     </div>
+
                     <div>
-                        <span class="font-bold text-lg block tracking-wide">CÔNG TY TNHH KỸ THUẬT NĂNG LƯỢNG VAS</span>
-                        <span class="text-xs text-blue-200 block -mt-1">Nền Tảng Quản Lý Yêu Cầu Vật Tư Công Trường</span>
+                        <span class="font-bold text-lg block tracking-wide text-slate-800">CÔNG TY TNHH KỸ THUẬT NĂNG LƯỢNG VAS</span>
+                        <span class="text-xs text-slate-500 block -mt-1">Nền Tảng Quản Lý Yêu Cầu Vật Tư Công Trường</span>
                     </div>
                 </div>
                 <nav class="flex space-x-1 sm:space-x-2">
-                    <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 bg-blue-900 text-white shadow">
+                    <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 bg-blue-600 text-white shadow">
                         <i class="fa-solid fa-chart-pie mr-1.5"></i>Tổng Quan Thống Kê
                     </button>
-                    <button onclick="switchTab('danhmuc')" id="tab-danhmuc" class="tab-btn px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-blue-100 hover:bg-blue-600 hover:text-white">
+                    <button onclick="switchTab('danhmuc')" id="tab-danhmuc" class="tab-btn px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-slate-600 hover:bg-slate-100 hover:text-blue-600">
                         <i class="fa-solid fa-boxes-stacked mr-1.5"></i>Danh Mục Gốc & Yêu Cầu
                     </button>
                 </nav>
@@ -7639,13 +7641,16 @@
         };
 
         function switchTab(tabId) {
+            // Đặt lại tất cả các nút về trạng thái không được chọn (chữ xám, nền trong suốt)
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-blue-900', 'text-white', 'shadow');
-                btn.classList.add('text-blue-100', 'hover:bg-blue-600', 'hover:text-white');
+                btn.classList.remove('bg-blue-600', 'text-white', 'shadow');
+                btn.classList.add('text-slate-600', 'hover:bg-slate-100', 'hover:text-blue-600');
             });
-            document.getElementById('tab-' + tabId).classList.add('bg-blue-900', 'text-white', 'shadow');
-            document.getElementById('tab-' + tabId).classList.remove('text-blue-100', 'hover:bg-blue-600');
+            // Tô màu xanh nổi bật cho nút đang được chọn
+            document.getElementById('tab-' + tabId).classList.add('bg-blue-600', 'text-white', 'shadow');
+            document.getElementById('tab-' + tabId).classList.remove('text-slate-600', 'hover:bg-slate-100', 'hover:text-blue-600');
 
+            // Ẩn/hiện các trang nội dung
             document.querySelectorAll('.tab-content').forEach(page => {
                 page.classList.add('hidden');
                 page.classList.remove('block');
@@ -8026,8 +8031,8 @@
                     
                     const logoId = workbook.addImage({ base64: base64, extension: 'png' });
                     sheet.addImage(logoId, {
-                        tl: { col: 1.5, row: 0.5 }, 
-                        br: { col: 3.5, row: 4.2 }, 
+                        tl: { col: 0.6, row: 0.5 }, 
+                        br: { col: 2.5, row: 3.8 }, 
                         editAs: 'oneCell' 
                     });
                 }
