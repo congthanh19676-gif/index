@@ -7985,17 +7985,17 @@
 
             const workbook = new ExcelJS.Workbook();
             
-            // Khởi tạo Sheet kèm theo cấu hình trang in (Page Setup)
+            // Khởi tạo Sheet kèm cấu hình trang in tối ưu
             const sheet = workbook.addWorksheet('Phieu_Yeu_Cau', {
                 pageSetup: {
-                    paperSize: 9, // Mã số 9 tương đương khổ giấy A4
+                    paperSize: 9, // A4
                     orientation: 'landscape', // In ngang
-                    fitToPage: true, // Ép nội dung vừa trang in
-                    fitToWidth: 1, // Vừa khít chiều rộng của 1 trang
-                    fitToHeight: 0, // Chiều dài tự động tuỳ theo số lượng vật tư
-                    horizontalCentered: true, // Căn giữa nội dung trên giấy
-                    margins: { // Căn lề giấy (đơn vị: inch)
-                        left: 0.3, right: 0.3,
+                    fitToPage: true, 
+                    fitToWidth: 1, // Ép vừa khít 1 trang theo chiều ngang
+                    fitToHeight: 999, // Cho phép kéo dài thành nhiều trang theo chiều dọc nếu dữ liệu nhiều
+                    horizontalCentered: true, // Căn giữa nội dung tuyệt đối
+                    margins: { // Thu hẹp lề một chút để nội dung có không gian thở, tránh rớt dòng nhiều
+                        left: 0.25, right: 0.25,
                         top: 0.5, bottom: 0.5,
                         header: 0.3, footer: 0.3
                     }
@@ -8004,13 +8004,13 @@
 
             // 1. Cấu hình chiều rộng các cột
             sheet.columns = [
-                { width: 8 },  // A: STT
-                { width: 25 }, // B: HẠNG MỤC
-                { width: 35 }, // C: VẬT TƯ
-                { width: 35 }, // D: QUY CÁCH
-                { width: 12 }, // E: ĐVT
-                { width: 22 }, // F: SỐ LƯỢNG
-                { width: 25 }  // G: GHI CHÚ
+                { width: 6 },  // A: STT
+                { width: 22 }, // B: HẠNG MỤC
+                { width: 32 }, // C: VẬT TƯ
+                { width: 32 }, // D: QUY CÁCH
+                { width: 10 }, // E: ĐVT
+                { width: 18 }, // F: SỐ LƯỢNG
+                { width: 22 }  // G: GHI CHÚ
             ];
 
             // 2. Chèn Logo VAS vào góc trái (A1:B3)
@@ -8024,11 +8024,7 @@
                         reader.readAsDataURL(blob);
                     });
                     
-                    const logoId = workbook.addImage({
-                        base64: base64,
-                        extension: 'png',
-                    });
-
+                    const logoId = workbook.addImage({ base64: base64, extension: 'png' });
                     sheet.addImage(logoId, {
                         tl: { col: 0.1, row: 0.1 }, 
                         br: { col: 1.9, row: 2.9 }, 
@@ -8039,7 +8035,7 @@
                 console.log("Cảnh báo: Không thể nạp logo vào Excel.", error);
             }
 
-            // 3. Xử lý Cụm Tiêu Đề Căn Giữa (Cột C đến E)
+            // 3. Xử lý Cụm Tiêu Đề Căn Giữa
             sheet.mergeCells('C1:E1');
             sheet.mergeCells('C2:E2');
             sheet.mergeCells('C3:E3');
@@ -8059,26 +8055,27 @@
             ngayCell.font = { name: 'Times New Roman', size: 12, bold: true };
             ngayCell.alignment = { vertical: 'middle', horizontal: 'center' };
 
-            // 4. Lý do đề nghị
+            // 4. Lý do đề nghị (Bật Wrap text để lý do dài không bị che)
             sheet.mergeCells('A5:G5');
             const lydoCell = sheet.getCell('A5');
             lydoCell.value = `Lý do đề nghị: ${meta.lydo}`;
             lydoCell.font = { name: 'Times New Roman', size: 12, bold: true };
+            lydoCell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+            sheet.getRow(5).height = 25; // Nới rộng nhẹ dòng này
 
             // 5. Khởi tạo Header Bảng (Dòng 7)
             const headerRow = sheet.getRow(7);
             headerRow.values = ["STT", "HẠNG MỤC", "VẬT TƯ THIẾT BỊ", "QUY CÁCH KỸ THUẬT", "ĐVT", "SỐ LƯỢNG YÊU CẦU", "GHI CHÚ"];
             headerRow.font = { name: 'Times New Roman', size: 11, bold: true };
-            headerRow.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
             
-            // Kẻ khung mỏng cho Header
+            // Kẻ khung mỏng và bật wrapText cho Header
             ['A','B','C','D','E','F','G'].forEach(col => {
-                sheet.getCell(`${col}7`).border = {
-                    top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}
-                };
+                const cell = sheet.getCell(`${col}7`);
+                cell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
+                cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
             });
 
-            // 6. Đổ Dữ Liệu Bảng & Kẻ Khung
+            // 6. Đổ Dữ Liệu Bảng & Cấu Hình Wrap Text
             let currentRow = 8;
             data.forEach((item, index) => {
                 const row = sheet.getRow(currentRow);
@@ -8087,27 +8084,30 @@
                 ];
                 row.font = { name: 'Times New Roman', size: 11 };
                 
-                sheet.getCell(`A${currentRow}`).alignment = { horizontal: 'center', vertical: 'middle' };
-                sheet.getCell(`E${currentRow}`).alignment = { horizontal: 'center', vertical: 'middle' };
-                sheet.getCell(`F${currentRow}`).alignment = { horizontal: 'center', vertical: 'middle' };
-
+                // Mặc định tất cả các ô trong dòng đều xuống dòng tự động (wrapText)
                 ['A','B','C','D','E','F','G'].forEach(col => {
-                    sheet.getCell(`${col}${currentRow}`).border = {
-                        top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}
-                    };
+                    const cell = sheet.getCell(`${col}${currentRow}`);
+                    cell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
+                    cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true }; 
                 });
+
+                // Căn giữa riêng biệt cho STT, ĐVT và Số lượng
+                sheet.getCell(`A${currentRow}`).alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+                sheet.getCell(`E${currentRow}`).alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+                sheet.getCell(`F${currentRow}`).alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+                
                 currentRow++;
             });
 
-            // 7. Khu Vực Chữ Ký (Dàn đều 3 góc)
+            // 7. Khu Vực Chữ Ký
             currentRow += 2; 
             sheet.mergeCells(`A${currentRow}:B${currentRow}`);
             sheet.mergeCells(`C${currentRow}:E${currentRow}`);
             sheet.mergeCells(`F${currentRow}:G${currentRow}`);
             
-            sheet.getCell(`A${currentRow}`).value = "Người lập biểu";
-            sheet.getCell(`C${currentRow}`).value = "Phụ trách bộ phận";
-            sheet.getCell(`F${currentRow}`).value = "Ban Giám đốc";
+            sheet.getCell(`A${currentRow}`).value = "Người yêu cầu";
+            sheet.getCell(`C${currentRow}`).value = "Người xét duyệt";
+            sheet.getCell(`F${currentRow}`).value = "Thủ kho";
             
             ['A', 'C', 'F'].forEach(col => {
                 const cell = sheet.getCell(`${col}${currentRow}`);
@@ -8199,15 +8199,15 @@
 
                     <div style="display: flex; justify-content: space-between; margin-top: 40px; font-weight: bold; text-align: center; font-size: 14px;">
                         <div style="width: 30%;">
-                            <p>Người lập biểu</p>
+                            <p>Người yêu cầu</p>
                             <p style="font-weight: normal; font-style: italic; font-size: 12px; margin-top: 5px;">(Ký, ghi rõ họ tên)</p>
                         </div>
                         <div style="width: 30%;">
-                            <p>Phụ trách bộ phận</p>
+                            <p>Người xét duyệt</p>
                             <p style="font-weight: normal; font-style: italic; font-size: 12px; margin-top: 5px;">(Ký, ghi rõ họ tên)</p>
                         </div>
                         <div style="width: 30%;">
-                            <p>Ban Giám đốc</p>
+                            <p>Thủ kho</p>
                             <p style="font-weight: normal; font-style: italic; font-size: 12px; margin-top: 5px;">(Ký, ghi rõ họ tên)</p>
                         </div>
                     </div>
