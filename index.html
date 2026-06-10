@@ -8047,69 +8047,81 @@
             showToast("Đang tạo tệp PDF, biểu mẫu chuẩn, vui lòng chờ...", "info");
 
             const printDiv = document.createElement('div');
-			printDiv.innerHTML = `
-				<div style="padding: 20px 30px; font-family: 'Times New Roman', serif; color: #000; background: #fff;">
-					<h2 style="text-align: center; font-size: 22px; font-weight: bold; margin-bottom: 5px;">
-						PHIẾU YÊU CẦU CẤP VẬT TƯ
-					</h2>
-					<h2 style="text-align: center; font-size: 14px; font-weight: bold; margin-bottom: 5px;">Số: ${meta.soPhieu}</h2>
-					<h2 style="text-align: center; font-size: 14px; font-weight: bold; margin-bottom: 5px;">${meta.ngayStr}</h2>
-					<h2 style="text-align: left; font-size: 14px; font-weight: bold; margin-bottom: 15px; margin-top: 10px;">Lý do đề nghị: ${meta.lydo}</h2>
-					
-					<table style="width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 30px;">
-						<thead>
-							<tr>
-								<th style="border: 1px solid #000; padding: 8px; text-align: center;">STT</th>
-								<th style="border: 1px solid #000; padding: 8px; text-align: center;">HẠNG MỤC</th>
-								<th style="border: 1px solid #000; padding: 8px; text-align: center;">VẬT TƯ THIẾT BỊ</th>
-								<th style="border: 1px solid #000; padding: 8px; text-align: center;">QUY CÁCH KỸ THUẬT</th>
-								<th style="border: 1px solid #000; padding: 8px; text-align: center;">ĐVT</th>
-								<th style="border: 1px solid #000; padding: 8px; text-align: center;">SỐ LƯỢNG<br>YÊU CẦU</th>
-								<th style="border: 1px solid #000; padding: 8px; text-align: center;">GHI CHÚ</th>
-							</tr>
-						</thead>
-						<tbody>
-							${data.map((item, idx) => `
-								<tr>
-									<td style="border: 1px solid #000; padding: 8px; text-align: center;">${idx + 1}</td>
-									<td style="border: 1px solid #000; padding: 8px;">${item.hangmuc}</td>
-									<td style="border: 1px solid #000; padding: 8px;">${item.ten}</td>
-									<td style="border: 1px solid #000; padding: 8px;">${item.quycach}</td>
-									<td style="border: 1px solid #000; padding: 8px; text-align: center;">${item.dvt}</td>
-									<td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">${item.soluongcan}</td>
-									<td style="border: 1px solid #000; padding: 8px;">${item.note || ''}</td>
-								</tr>
-							`).join('')}
-						</tbody>
-					</table>
+            printDiv.innerHTML = `
+                <div style="padding: 20px 30px; font-family: 'Times New Roman', serif; color: #000; background: #fff;">
+                    
+                    <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 15px;">
+                        <div style="width: 25%;">
+                            <img src="./images/VAS.png" style="max-width: 140px; height: auto;" alt="VAS Logo" onerror="this.style.display='none'">
+                        </div>
+                        
+                        <div style="width: 50%; text-align: center;">
+                            <h2 style="font-size: 22px; font-weight: bold; margin: 0 0 5px 0;">
+                                PHIẾU YÊU CẦU CẤP VẬT TƯ
+                            </h2>
+                            <h2 style="font-size: 14px; font-weight: bold; margin: 0 0 5px 0;">Số: ${meta.soPhieu}</h2>
+                            <h2 style="font-size: 14px; font-weight: bold; margin: 0;">${meta.ngayStr}</h2>
+                        </div>
+                        
+                        <div style="width: 25%;"></div>
+                    </div>
 
-					<div style="display: flex; justify-content: space-between; margin-top: 40px; font-weight: bold; text-align: center; font-size: 14px;">
-						<div style="width: 30%;">
-							<p>Người lập biểu</p>
-							<p style="font-weight: normal; font-style: italic; font-size: 12px; margin-top: 5px;">(Ký, ghi rõ họ tên)</p>
-						</div>
-						<div style="width: 30%;">
-							<p>Phụ trách bộ phận</p>
-							<p style="font-weight: normal; font-style: italic; font-size: 12px; margin-top: 5px;">(Ký, ghi rõ họ tên)</p>
-						</div>
-						<div style="width: 30%;">
-							<p>Ban Giám đốc</p>
-							<p style="font-weight: normal; font-style: italic; font-size: 12px; margin-top: 5px;">(Ký, ghi rõ họ tên)</p>
-						</div>
-					</div>
+                    <h2 style="text-align: left; font-size: 14px; font-weight: bold; margin-bottom: 15px;">Lý do đề nghị: ${meta.lydo}</h2>
+                    
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 30px;">
+                        <thead>
+                            <tr>
+                                <th style="border: 1px solid #000; padding: 8px; text-align: center;">STT</th>
+                                <th style="border: 1px solid #000; padding: 8px; text-align: center;">HẠNG MỤC</th>
+                                <th style="border: 1px solid #000; padding: 8px; text-align: center;">VẬT TƯ THIẾT BỊ</th>
+                                <th style="border: 1px solid #000; padding: 8px; text-align: center;">QUY CÁCH KỸ THUẬT</th>
+                                <th style="border: 1px solid #000; padding: 8px; text-align: center;">ĐVT</th>
+                                <th style="border: 1px solid #000; padding: 8px; text-align: center;">SỐ LƯỢNG<br>YÊU CẦU</th>
+                                <th style="border: 1px solid #000; padding: 8px; text-align: center;">GHI CHÚ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.map((item, idx) => `
+                                <tr>
+                                    <td style="border: 1px solid #000; padding: 8px; text-align: center;">${idx + 1}</td>
+                                    <td style="border: 1px solid #000; padding: 8px;">${item.hangmuc}</td>
+                                    <td style="border: 1px solid #000; padding: 8px;">${item.ten}</td>
+                                    <td style="border: 1px solid #000; padding: 8px;">${item.quycach}</td>
+                                    <td style="border: 1px solid #000; padding: 8px; text-align: center;">${item.dvt}</td>
+                                    <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">${item.soluongcan}</td>
+                                    <td style="border: 1px solid #000; padding: 8px;">${item.note || ''}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
 
-					<div style="margin-top: 60px; font-size: 12px; text-align: left;font-weight: normal; font-style: italic">
-						<p>WH-P01-F06 (00-06/06/2024)</p>
-					</div>
-				</div>
-			`;
+                    <div style="display: flex; justify-content: space-between; margin-top: 40px; font-weight: bold; text-align: center; font-size: 14px;">
+                        <div style="width: 30%;">
+                            <p>Người lập biểu</p>
+                            <p style="font-weight: normal; font-style: italic; font-size: 12px; margin-top: 5px;">(Ký, ghi rõ họ tên)</p>
+                        </div>
+                        <div style="width: 30%;">
+                            <p>Phụ trách bộ phận</p>
+                            <p style="font-weight: normal; font-style: italic; font-size: 12px; margin-top: 5px;">(Ký, ghi rõ họ tên)</p>
+                        </div>
+                        <div style="width: 30%;">
+                            <p>Ban Giám đốc</p>
+                            <p style="font-weight: normal; font-style: italic; font-size: 12px; margin-top: 5px;">(Ký, ghi rõ họ tên)</p>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 60px; font-size: 12px; text-align: left;font-weight: normal; font-style: italic">
+                        <p>WH-P01-F06 (00-06/06/2024)</p>
+                    </div>
+                </div>
+            `;
             
             const safeSoPhieu = meta.soPhieu.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'phieu_yeu_cau';
             const opt = {
                 margin:       0.3,
                 filename:     `PhieuYeuCau_${safeSoPhieu}.pdf`,
                 image:        { type: 'jpeg', quality: 1 },
-                html2canvas:  { scale: 2, useCORS: true },
+                html2canvas:  { scale: 2, useCORS: true }, // useCORS rất quan trọng để render ảnh
                 jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
             };
 
