@@ -192,7 +192,7 @@
                 <div class="absolute inset-0 bg-slate-900 opacity-60"></div>
             </div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
+            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
                 <div class="bg-white px-6 pt-6 pb-4 sm:pb-6">
                     <div class="flex justify-between items-center pb-3 border-b border-slate-100">
                         <h3 class="text-base font-bold text-slate-800"><i class="fa-solid fa-list-check mr-2 text-emerald-600"></i>Tùy Chọn Hạng Mục Xuất Phiếu</h3>
@@ -201,18 +201,35 @@
                         </button>
                     </div>
 
-                    <div class="mt-4 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-3">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Số phiếu:</label>
-                            <input type="text" id="export-so" placeholder="Ví dụ: 01/YC-VT" class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none transition">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Ngày lập phiếu:</label>
-                            <input type="date" id="export-ngay" class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none transition">
+                    <div class="mt-4 bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Số phiếu:</label>
+                                <input type="text" id="export-so" placeholder="Ví dụ: 01/YC-VT" class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none transition">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Ngày lập phiếu:</label>
+                                <input type="date" id="export-ngay" class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none transition">
+                            </div>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1">Lý do đề nghị:</label>
                             <input type="text" id="export-lydo" placeholder="Ví dụ: Cấp vật tư thi công..." class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none transition">
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-slate-200">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Người yêu cầu:</label>
+                                <input type="text" id="export-nguoilap" placeholder="Họ và tên..." class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none transition">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Người xét duyệt:</label>
+                                <input type="text" id="export-phutrach" placeholder="Họ và tên..." class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none transition">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Thủ kho:</label>
+                                <input type="text" id="export-giamdoc" placeholder="Họ và tên..." class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none transition">
+                            </div>
                         </div>
                     </div>
 
@@ -221,6 +238,7 @@
                         <div class="max-h-48 overflow-y-auto border border-slate-200 rounded-lg p-3 bg-white" id="export-categories-container">
                         </div>
                     </div>
+                    
                     <div class="pt-4 border-t border-slate-100 flex justify-end space-x-2 mt-4">
                         <button type="button" onclick="executeExport('excel')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-medium transition shadow-sm flex items-center">
                             <i class="fa-solid fa-file-excel mr-1.5"></i>Xuất Excel
@@ -7917,10 +7935,13 @@
                 return showToast("Bạn chưa nhập số lượng cần xuất cho bất kỳ vật tư nào!", "warning");
             }
 
-            // Reset form
+            // Reset toàn bộ form
             document.getElementById('export-ngay').valueAsDate = new Date();
             document.getElementById('export-so').value = "";
             document.getElementById('export-lydo').value = "";
+            document.getElementById('export-nguoilap').value = "";
+            document.getElementById('export-phutrach').value = "";
+            document.getElementById('export-giamdoc').value = "";
 
             const categories = [...new Set(itemsWithQuantity.map(x => x.hangmuc))];
             const container = document.getElementById('export-categories-container');
@@ -7964,17 +7985,21 @@
                 item.soluongcan && parseFloat(item.soluongcan) > 0 && selectedCategories.includes(item.hangmuc)
             );
 
+            // Thu thập toàn bộ thông tin đã nhập
             const soPhieu = document.getElementById('export-so').value.trim() || "...";
             const lydo = document.getElementById('export-lydo').value.trim() || ".............................................";
+            const nguoiLap = document.getElementById('export-nguoilap').value.trim();
+            const phuTrach = document.getElementById('export-phutrach').value.trim();
+            const giamDoc = document.getElementById('export-giamdoc').value.trim();
+
             const ngayInput = document.getElementById('export-ngay').value;
-            
             let ngayStr = "Ngày ... tháng ... năm .....";
             if (ngayInput) {
                 const d = new Date(ngayInput);
                 ngayStr = `Ngày ${String(d.getDate()).padStart(2, '0')} tháng ${String(d.getMonth() + 1).padStart(2, '0')} năm ${d.getFullYear()}`;
             }
 
-            const metaData = { soPhieu, ngayStr, lydo };
+            const metaData = { soPhieu, ngayStr, lydo, nguoiLap, phuTrach, giamDoc };
 
             if (type === 'excel') {
                 await generateExcel(dataToExport, metaData);
@@ -8007,13 +8032,8 @@
             });
 
             sheet.columns = [
-                { width: 6 },  // A: STT
-                { width: 22 }, // B: HẠNG MỤC
-                { width: 32 }, // C: VẬT TƯ
-                { width: 32 }, // D: QUY CÁCH
-                { width: 10 }, // E: ĐVT
-                { width: 18 }, // F: SỐ LƯỢNG
-                { width: 22 }  // G: GHI CHÚ
+                { width: 6 },  { width: 22 }, { width: 32 }, { width: 32 }, 
+                { width: 10 }, { width: 18 }, { width: 22 }  
             ];
 
             try {
@@ -8028,18 +8048,12 @@
                     
                     const logoId = workbook.addImage({ base64: base64, extension: 'png' });
                     sheet.addImage(logoId, {
-                        tl: { col: 0.1, row: 0.1 }, 
-                        br: { col: 1.9, row: 2.9 }, 
-                        editAs: 'oneCell' 
+                        tl: { col: 0.1, row: 0.1 }, br: { col: 1.9, row: 2.9 }, editAs: 'oneCell' 
                     });
                 }
-            } catch (error) {
-                console.log("Cảnh báo: Không thể nạp logo vào Excel.", error);
-            }
+            } catch (error) { console.log("Cảnh báo: Không thể nạp logo vào Excel.", error); }
 
-            sheet.mergeCells('C1:E1');
-            sheet.mergeCells('C2:E2');
-            sheet.mergeCells('C3:E3');
+            sheet.mergeCells('C1:E1'); sheet.mergeCells('C2:E2'); sheet.mergeCells('C3:E3');
 
             const titleCell = sheet.getCell('C1');
             titleCell.value = "PHIẾU YÊU CẦU CẤP VẬT TƯ";
@@ -8076,10 +8090,7 @@
             let currentRow = 8;
             data.forEach((item, index) => {
                 const row = sheet.getRow(currentRow);
-                // CHỈNH SỬA Ở ĐÂY: Thay item.note bằng chuỗi rỗng ""
-                row.values = [
-                    index + 1, item.hangmuc, item.ten, item.quycach, item.dvt, parseFloat(item.soluongcan), ""
-                ];
+                row.values = [index + 1, item.hangmuc, item.ten, item.quycach, item.dvt, parseFloat(item.soluongcan), ""];
                 row.font = { name: 'Times New Roman', size: 11 };
                 
                 ['A','B','C','D','E','F','G'].forEach(col => {
@@ -8095,6 +8106,7 @@
                 currentRow++;
             });
 
+            // --- BẮT ĐẦU CHỈNH SỬA KHU VỰC CHỮ KÝ ---
             currentRow += 2; 
             sheet.mergeCells(`A${currentRow}:B${currentRow}`);
             sheet.mergeCells(`C${currentRow}:E${currentRow}`);
@@ -8125,7 +8137,24 @@
                 cell.alignment = { horizontal: 'center' };
             });
 
+            // Chừa 3 dòng trống (chiều cao để ký tay) rồi in Tên
             currentRow += 4;
+            sheet.mergeCells(`A${currentRow}:B${currentRow}`);
+            sheet.mergeCells(`C${currentRow}:E${currentRow}`);
+            sheet.mergeCells(`F${currentRow}:G${currentRow}`);
+
+            sheet.getCell(`A${currentRow}`).value = meta.nguoiLap;
+            sheet.getCell(`C${currentRow}`).value = meta.phuTrach;
+            sheet.getCell(`F${currentRow}`).value = meta.giamDoc;
+
+            ['A', 'C', 'F'].forEach(col => {
+                const cell = sheet.getCell(`${col}${currentRow}`);
+                cell.font = { name: 'Times New Roman', size: 12, bold: true };
+                cell.alignment = { horizontal: 'center' };
+            });
+            // --- KẾT THÚC CHỈNH SỬA KHU VỰC CHỮ KÝ ---
+
+            currentRow += 2;
             sheet.mergeCells(`A${currentRow}:C${currentRow}`);
             const footerCell = sheet.getCell(`A${currentRow}`);
             footerCell.value = "WH-P01-F06 (00-06/06/2024)";
@@ -8135,7 +8164,7 @@
             const buffer = await workbook.xlsx.writeBuffer();
             saveAs(new Blob([buffer]), `PhieuYeuCau_${safeSoPhieu}.xlsx`);
             
-            showToast("Đã tải xuống file Excel!", "success");
+            showToast("Đã tải xuống file Excel chuẩn in A4!", "success");
         }
 
         function generatePDF(data, meta) {
@@ -8194,18 +8223,21 @@
                         <div style="width: 30%;">
                             <p>Người yêu cầu</p>
                             <p style="font-weight: normal; font-style: italic; font-size: 12px; margin-top: 5px;">(Ký, ghi rõ họ tên)</p>
+                            <p style="margin-top: 70px; font-size: 14px;">${meta.nguoiLap}</p>
                         </div>
                         <div style="width: 30%;">
                             <p>Người xét duyệt</p>
                             <p style="font-weight: normal; font-style: italic; font-size: 12px; margin-top: 5px;">(Ký, ghi rõ họ tên)</p>
+                            <p style="margin-top: 70px; font-size: 14px;">${meta.phuTrach}</p>
                         </div>
                         <div style="width: 30%;">
                             <p>Thủ kho</p>
                             <p style="font-weight: normal; font-style: italic; font-size: 12px; margin-top: 5px;">(Ký, ghi rõ họ tên)</p>
+                            <p style="margin-top: 70px; font-size: 14px;">${meta.giamDoc}</p>
                         </div>
                     </div>
 
-                    <div style="margin-top: 60px; font-size: 12px; text-align: left;font-weight: normal; font-style: italic">
+                    <div style="margin-top: 30px; font-size: 12px; text-align: left;font-weight: normal; font-style: italic">
                         <p>WH-P01-F06 (00-06/06/2024)</p>
                     </div>
                 </div>
