@@ -7984,9 +7984,25 @@
             showToast("Đang xử lý Form Excel chuẩn hóa...", "info");
 
             const workbook = new ExcelJS.Workbook();
-            const sheet = workbook.addWorksheet('Phieu_Yeu_Cau');
+            
+            // Khởi tạo Sheet kèm theo cấu hình trang in (Page Setup)
+            const sheet = workbook.addWorksheet('Phieu_Yeu_Cau', {
+                pageSetup: {
+                    paperSize: 9, // Mã số 9 tương đương khổ giấy A4
+                    orientation: 'landscape', // In ngang
+                    fitToPage: true, // Ép nội dung vừa trang in
+                    fitToWidth: 1, // Vừa khít chiều rộng của 1 trang
+                    fitToHeight: 0, // Chiều dài tự động tuỳ theo số lượng vật tư
+                    horizontalCentered: true, // Căn giữa nội dung trên giấy
+                    margins: { // Căn lề giấy (đơn vị: inch)
+                        left: 0.3, right: 0.3,
+                        top: 0.5, bottom: 0.5,
+                        header: 0.3, footer: 0.3
+                    }
+                }
+            });
 
-            // 1. Cấu hình chiều rộng các cột (Khớp với PDF)
+            // 1. Cấu hình chiều rộng các cột
             sheet.columns = [
                 { width: 8 },  // A: STT
                 { width: 25 }, // B: HẠNG MỤC
@@ -8013,10 +8029,9 @@
                         extension: 'png',
                     });
 
-                    // Đặt ảnh vào khung ô (tl: Top-Left, br: Bottom-Right)
                     sheet.addImage(logoId, {
-                        tl: { col: 0.1, row: 0.1 }, // Cột A, Dòng 1 (nhích vào 1 chút cho đẹp)
-                        br: { col: 1.9, row: 2.9 }, // Cột B, Dòng 3
+                        tl: { col: 0.1, row: 0.1 }, 
+                        br: { col: 1.9, row: 2.9 }, 
                         editAs: 'oneCell' 
                     });
                 }
@@ -8072,7 +8087,6 @@
                 ];
                 row.font = { name: 'Times New Roman', size: 11 };
                 
-                // Căn giữa các cột số liệu
                 sheet.getCell(`A${currentRow}`).alignment = { horizontal: 'center', vertical: 'middle' };
                 sheet.getCell(`E${currentRow}`).alignment = { horizontal: 'center', vertical: 'middle' };
                 sheet.getCell(`F${currentRow}`).alignment = { horizontal: 'center', vertical: 'middle' };
@@ -8085,7 +8099,7 @@
                 currentRow++;
             });
 
-            // 7. Khu Vực Chữ Ký (Dàn đều 3 góc y hệt PDF)
+            // 7. Khu Vực Chữ Ký (Dàn đều 3 góc)
             currentRow += 2; 
             sheet.mergeCells(`A${currentRow}:B${currentRow}`);
             sheet.mergeCells(`C${currentRow}:E${currentRow}`);
@@ -8128,7 +8142,7 @@
             const buffer = await workbook.xlsx.writeBuffer();
             saveAs(new Blob([buffer]), `PhieuYeuCau_${safeSoPhieu}.xlsx`);
             
-            showToast("Đã tải xuống file Excel với định dạng chuẩn!", "success");
+            showToast("Đã tải xuống file Excel chuẩn in A4!", "success");
         }
 
         function generatePDF(data, meta) {
