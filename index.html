@@ -129,16 +129,21 @@
                     <p class="text-xs text-slate-400">Nhập số lượng ở cột "SL Cần" trên bảng để xuất Phiếu Yêu Cầu.</p>
                 </div>
                 <div class="flex flex-wrap gap-2">
-                    <button onclick="exportCodeSource()" class="bg-slate-700 hover:bg-slate-800 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
-                        <i class="fa-solid fa-code"></i> <span>Xuất Backup Code</span>
-                    </button>
-                    <button onclick="openExportModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
-                        <i class="fa-solid fa-file-export"></i> <span>Xuất Phiếu BOM (Excel/PDF)</span>
-                    </button>
-                    <button onclick="openModal('add-vattu-modal')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
-                        <i class="fa-solid fa-plus"></i> <span>Thêm Mới</span>
-                    </button>
-                </div>
+    <button onclick="exportCodeSource()" class="bg-slate-700 hover:bg-slate-800 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
+        <i class="fa-solid fa-code"></i> <span>Xuất Backup Code</span>
+    </button>
+    <button onclick="openExportModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
+        <i class="fa-solid fa-file-export"></i> <span>Xuất Phiếu BOM (Excel/PDF)</span>
+    </button>
+    
+    <button onclick="resetAllSoLuongCan()" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
+        <i class="fa-solid fa-arrow-rotate-left"></i> <span>Reset SL Cần</span>
+    </button>
+    
+    <button onclick="openModal('add-vattu-modal')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
+        <i class="fa-solid fa-plus"></i> <span>Thêm Mới</span>
+    </button>
+</div>
             </div>
 
             <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -7717,7 +7722,23 @@
                 saveToLocalStorage();
             }
         }
-
+        function resetAllSoLuongCan() {
+            // Hiển thị hộp thoại xác nhận để tránh người dùng bấm nhầm
+            if (confirm("Bạn có chắc chắn muốn đưa toàn bộ 'SL Cần' của tất cả vật tư về 0 để làm phiếu mới?")) {
+                // Duyệt qua mảng và đặt lại số lượng về 0
+                dataset_danhmuc.forEach(item => {
+                    item.soluongcan = 0;
+                });
+                
+                // Lưu lại trạng thái mới vào bộ nhớ trình duyệt
+                saveToLocalStorage();
+                
+                // Vẽ lại bảng dữ liệu trên màn hình
+                renderDanhMuc();
+                
+                showToast("Đã reset toàn bộ số lượng cần về 0 thành công!", "success");
+            }
+        }
         function renderDanhMuc() {
             const tableBody = document.getElementById('danhmuc-table-body');
             tableBody.innerHTML = '';
