@@ -8469,7 +8469,7 @@
 
             const safeSoPhieu = meta.soPhieu.replace(/[^a-z0-9-]/gi, '_').toLowerCase() || 'phieu_yeu_cau';
             const buffer = await workbook.xlsx.writeBuffer();
-            saveAs(new Blob([buffer]), `PhieuYeuCau_${safeSoPhieu}.xlsx`);
+            saveAs(new Blob([buffer]), `[tên dự án]_xxxxkWp_PHIẾU YÊU CẦU CẤP VẬT TƯ [Hạng mục]_${String(d.getDate()).padStart(2, '0')} - ${String(d.getMonth() + 1).padStart(2, '0')} - ${d.getFullYear()}_REVxx.xlsx`);
             
             showToast("Đã tải xuống file Excel chuẩn in A4!", "success");
         }
