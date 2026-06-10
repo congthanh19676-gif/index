@@ -165,14 +165,14 @@
                     <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
                         <thead class="bg-slate-50">
                             <tr>
-                                <th class="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider w-16">STT</th>
-                                <th class="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Mã Vật Tư</th>
-                                <th class="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Hệ Thống / Gói Thầu</th>
-                                <th class="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Tên Vật Tư / Thiết Bị</th>
-                                <th class="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Quy Cách Kỹ Thuật</th>
-                                <th class="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">ĐVT</th>
-                                <th class="px-6 py-3.5 text-xs font-bold text-amber-600 uppercase tracking-wider w-28 bg-amber-50">SL Cần</th>
-                                <th class="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider w-32">Thao tác</th>
+                                <th class="px-3 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider w-12 text-center">STT</th>
+                                <th class="px-3 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[120px]">Mã Vật Tư</th>
+                                <th class="px-3 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[120px]">Hệ Thống / Gói Thầu</th>
+                                <th class="px-3 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider max-w-[200px]">Tên Vật Tư / Thiết Bị</th>
+                                <th class="px-3 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider max-w-[150px]">Quy Cách Kỹ Thuật</th>
+                                <th class="px-3 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">ĐVT</th>
+                                <th class="px-3 py-3.5 text-xs font-bold text-amber-600 uppercase tracking-wider w-24 bg-amber-50 text-center">SL Cần</th>
+                                <th class="px-3 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider w-24 text-center">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody id="danhmuc-table-body" class="bg-white divide-y divide-slate-200"></tbody>
@@ -7723,21 +7723,21 @@
                 const row = document.createElement('tr');
                 row.className = 'hover:bg-slate-50 transition border-b border-slate-100';
                 row.innerHTML = `
-                    <td class="px-6 py-3.5 font-semibold text-slate-400">${index + 1}</td>
-                    <td class="px-6 py-3.5"><span class="bg-blue-50 text-blue-700 font-mono text-xs px-2.5 py-1 rounded-md border border-blue-100">${item.id}</span></td>
-                    <td class="px-6 py-3.5 font-semibold text-slate-500 text-xs">${item.hangmuc}</td>
-                    <td class="px-6 py-3.5 font-bold text-slate-800">${item.ten}</td>
-                    <td class="px-6 py-3.5 font-bold text-indigo-700 text-xs"><span class="bg-indigo-50 border border-indigo-100 px-2 py-1 rounded-lg">${item.quycach}</span></td>
-                    <td class="px-6 py-3.5 text-slate-500 font-semibold text-xs">${item.dvt}</td>
-                    <td class="px-6 py-3.5 bg-amber-50/30">
-                        <input type="number" min="0" value="${slCan}" onchange="updateSoLuongCan('${item.id}', this.value)" class="w-16 p-1.5 border border-amber-200 rounded-lg text-center text-sm font-bold text-amber-700 focus:border-amber-500 outline-none shadow-inner bg-white">
+                    <td class="px-3 py-3.5 font-semibold text-slate-400 text-center">${index + 1}</td>
+                    <td class="px-3 py-3.5"><span class="bg-blue-50 text-blue-700 font-mono text-xs px-2 py-1 rounded-md border border-blue-100 break-words inline-block max-w-[140px]">${item.id}</span></td>
+                    <td class="px-3 py-3.5 font-semibold text-slate-500 text-xs">${item.hangmuc}</td>
+                    <td class="px-3 py-3.5 font-bold text-slate-800 break-words max-w-[200px]">${item.ten}</td>
+                    <td class="px-3 py-3.5 font-bold text-indigo-700 text-xs"><span class="bg-indigo-50 border border-indigo-100 px-2 py-1 rounded-lg inline-block break-words max-w-[160px]">${item.quycach}</span></td>
+                    <td class="px-3 py-3.5 text-slate-500 font-semibold text-xs text-center">${item.dvt}</td>
+                    <td class="px-3 py-3.5 bg-amber-50/30 text-center">
+                        <input type="number" min="0" value="${slCan}" onchange="updateSoLuongCan('${item.id}', this.value)" class="w-16 p-1 border border-amber-200 rounded-lg text-center text-sm font-bold text-amber-700 focus:border-amber-500 outline-none shadow-inner bg-white">
                     </td>
-                    <td class="px-6 py-3.5">
-                        <div class="flex items-center space-x-1">
-                            <button onclick="editVattu('${item.id}')" class="text-indigo-600 hover:bg-indigo-50 px-2 py-1 rounded-lg text-xs font-semibold flex items-center transition">
-                                <i class="fa-solid fa-pen-to-square mr-1"></i>Sửa
+                    <td class="px-3 py-3.5">
+                        <div class="flex items-center justify-center space-x-2">
+                            <button onclick="editVattu('${item.id}')" title="Sửa vật tư" class="text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 p-1.5 rounded-lg text-sm font-semibold transition">
+                                <i class="fa-solid fa-pen-to-square"></i>
                             </button>
-                            <button onclick="deleteVattu('${item.id}')" class="text-rose-400 hover:text-rose-700 p-1.5 rounded-md hover:bg-rose-50 transition">
+                            <button onclick="deleteVattu('${item.id}')" title="Xóa vật tư" class="text-rose-400 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 p-1.5 rounded-lg transition">
                                 <i class="fa-regular fa-trash-can"></i>
                             </button>
                         </div>
