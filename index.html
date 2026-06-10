@@ -19,6 +19,13 @@
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .a4-preview-sheet {
+            font-family: 'Times New Roman', Times, serif;
+            color: #000;
+            background: #fff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            min-width: 750px;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
@@ -192,166 +199,80 @@
     </main>
 
     <div id="export-modal" class="fixed inset-0 z-50 overflow-y-auto hidden">
-        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center lg:p-6">
             <div class="fixed inset-0 transition-opacity" aria-hidden="true" onclick="closeModal('export-modal')">
                 <div class="absolute inset-0 bg-slate-900 opacity-60"></div>
             </div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-                <div class="bg-white px-6 pt-6 pb-4 sm:pb-6">
-                    <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                        <h3 class="text-base font-bold text-slate-800"><i class="fa-solid fa-list-check mr-2 text-emerald-600"></i>Tùy Chọn Hạng Mục Xuất Phiếu</h3>
-                        <button onclick="closeModal('export-modal')" class="text-slate-400 hover:text-slate-600 transition">
-                            <i class="fa-solid fa-xmark text-lg"></i>
-                        </button>
+            <span class="hidden lg:inline-block lg:align-middle lg:h-screen" aria-hidden="true">&#8203;</span>
+            
+            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all my-8 lg:align-middle max-w-6xl w-full">
+                <div class="bg-white px-6 py-5 border-b border-slate-100 flex justify-between items-center">
+                    <h3 class="text-base font-bold text-slate-800"><i class="fa-solid fa-file-waveform mr-2 text-emerald-600"></i>Cấu Hình & Xem Trước Phiếu Yêu Cầu Vật Tư</h3>
+                    <button onclick="closeModal('export-modal')" class="text-slate-400 hover:text-slate-600 transition">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+                
+                <div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 max-h-[calc(100vh-160px)] overflow-y-auto">
+                    <div class="lg:col-span-5 space-y-4">
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3.5">
+                            <span class="text-xs font-bold text-blue-700 tracking-wider uppercase block"><i class="fa-solid fa-circle-info mr-1"></i>Thông tin phiếu</span>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Số phiếu:</label>
+                                    <input type="text" id="export-so" oninput="updateExportPreview()" placeholder="Ví dụ: 01/YC-VT" class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none bg-white transition">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Ngày lập phiếu:</label>
+                                    <input type="date" id="export-ngay" onchange="updateExportPreview()" class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none bg-white transition">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Lý do đề nghị:</label>
+                                <input type="text" id="export-lydo" oninput="updateExportPreview()" placeholder="Ví dụ: Cấp vật tư..." class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none bg-white transition">
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3.5">
+                            <span class="text-xs font-bold text-blue-700 tracking-wider uppercase block"><i class="fa-solid fa-signature mr-1"></i>Thành phần nhân sự ký duyệt</span>
+                            <div class="space-y-2.5">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Người lập biểu:</label>
+                                    <input type="text" id="export-nguoilap" oninput="updateExportPreview()" placeholder="Họ và tên..." class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none bg-white transition">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Phụ trách bộ phận:</label>
+                                    <input type="text" id="export-phutrach" oninput="updateExportPreview()" placeholder="Họ và tên..." class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none bg-white transition">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Ban Giám đốc:</label>
+                                    <input type="text" id="export-giamdoc" oninput="updateExportPreview()" placeholder="Họ và tên..." class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none bg-white transition">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                            <span class="text-xs font-bold text-slate-700 block tracking-wider uppercase">Lọc Hạng Mục Hệ Thống Cấp Phát:</span>
+                            <div class="max-h-36 overflow-y-auto border border-slate-200 rounded-lg p-2.5 bg-white space-y-2" id="export-categories-container"></div>
+                        </div>
                     </div>
 
-                    <div class="mt-4 bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Số phiếu:</label>
-                                <input type="text" id="export-so" placeholder="Ví dụ: 01/YC-VT" class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none transition">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Ngày lập phiếu:</label>
-                                <input type="date" id="export-ngay" class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none transition">
-                            </div>
+                    <div class="lg:col-span-7 flex flex-col">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block"><i class="fa-solid fa-eye mr-1.5"></i>Khung Nhìn Bản In Mô Phỏng (Landscape A4)</span>
+                        <div class="border border-slate-300 bg-slate-200 rounded-xl p-4 overflow-auto flex-grow max-h-[500px]">
+                            <div id="live-preview-pane" class="a4-preview-sheet p-6 mx-auto"></div>
                         </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Lý do đề nghị:</label>
-                            <input type="text" id="export-lydo" placeholder="Ví dụ: Cấp vật tư thi công..." class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none transition">
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-slate-200">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Người yêu cầu:</label>
-                                <input type="text" id="export-nguoilap" placeholder="Họ và tên..." class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none transition">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Người xét duyệt:</label>
-                                <input type="text" id="export-phutrach" placeholder="Họ và tên..." class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none transition">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Thủ kho:</label>
-                                <input type="text" id="export-giamdoc" placeholder="Họ và tên..." class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none transition">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-4">
-                        <p class="text-sm text-slate-600 mb-2">Chọn hạng mục (SL > 0) để xuất:</p>
-                        <div class="max-h-48 overflow-y-auto border border-slate-200 rounded-lg p-3 bg-white" id="export-categories-container">
-                        </div>
-                    </div>
-                    
-                    <div class="pt-4 border-t border-slate-100 flex justify-end space-x-2 mt-4">
-                        <button type="button" onclick="executeExport('excel')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-medium transition shadow-sm flex items-center">
-                            <i class="fa-solid fa-file-excel mr-1.5"></i>Xuất Excel
-                        </button>
-                        <button type="button" onclick="executeExport('pdf')" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-sm font-medium transition shadow-sm flex items-center">
-                            <i class="fa-solid fa-file-pdf mr-1.5"></i>Xuất PDF
-                        </button>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <div id="add-vattu-modal" class="fixed inset-0 z-50 overflow-y-auto hidden">
-        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 transition-opacity" aria-hidden="true" onclick="closeModal('add-vattu-modal')">
-                <div class="absolute inset-0 bg-slate-900 opacity-60"></div>
-            </div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-                <div class="bg-white px-6 pt-6 pb-4 sm:pb-6">
-                    <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                        <h3 class="text-base font-bold text-slate-800" id="vattu-modal-title"><i class="fa-solid fa-boxes-packing mr-2 text-indigo-600"></i>Thêm Mới Vật Tư</h3>
-                        <button onclick="closeModal('add-vattu-modal')" class="text-slate-400 hover:text-slate-600 transition">
-                            <i class="fa-solid fa-xmark text-lg"></i>
-                        </button>
-                    </div>
-                    <form id="vattu-form" class="space-y-4 mt-4" onsubmit="handleNewVattu(event)">
-                        <input type="hidden" id="vt-edit-mode" value="CREATE">
-
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Mã định danh duy nhất</label>
-                            <input type="text" id="vt-ma" required placeholder="Ví dụ: HSE-SEAMLOCK-M8..." class="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:border-blue-500 focus:outline-none transition">
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Hệ thống / Gói thầu</label>
-                                <select id="vt-hangmuc-select" required onchange="toggleCustomCategoryInput()" class="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:border-blue-500 bg-slate-50">
-                                    <option value="Giàn giáo">Giàn giáo</option>
-                                    <option value="CAZ">CAZ</option>
-                                    <option value="Bao che tôn sáng">Bao che tôn sáng</option>
-                                    <option value="Dây cứu sinh">Dây cứu sinh</option>
-                                    <option value="Khung giá đỡ nhôm">Khung giá đỡ nhôm</option>
-                                    <option value="Hệ thống Thang/máng cáp">Hệ thống Thang/máng cáp</option>
-                                    <option value="Lối đi bảo trì (walkway)">Lối đi bảo trì (walkway)</option>
-                                    <option value="Cáp điện DC & Đầu nối">Cáp điện DC & Đầu nối</option>
-                                    <option value="Cáp điện AC">Cáp điện AC</option>
-                                    <option value="Hệ thống rửa pin">Hệ thống rửa pin</option>
-                                    <option value="Trạm biến tần">Trạm biến tần</option>
-                                    <option value="Cảm biến môi trường">Cảm biến môi trường</option>
-                                    <option value="Hệ thống tiếp địa">Hệ thống tiếp địa</option>
-                                    <option value="Hệ thống chống sét">Hệ thống chống sét</option>
-                                    <option value="CUSTOM_NEW">-- Khác (Tạo hạng mục mới) --</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Đơn vị tính (ĐVT)</label>
-                                <input type="text" id="vt-dvt" required placeholder="Tấm, Cây, Cuộn, Cái..." class="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:border-blue-500 transition">
-                            </div>
-                        </div>
-
-                        <div id="custom-hangmuc-wrapper" class="hidden animate-pulse">
-                            <label class="block text-xs font-bold text-amber-600 uppercase tracking-wider mb-1"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Tên Hệ thống mới</label>
-                            <input type="text" id="vt-hangmuc-custom" placeholder="Nhập tên hạng mục tự tạo..." class="w-full rounded-xl border-2 border-amber-300 py-2 px-3 text-sm focus:border-blue-500 transition">
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Tên Vật tư / Thiết bị</label>
-                                <input type="text" id="vt-ten" required placeholder="Sắt ống Hòa Phát..." class="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:border-blue-500 transition">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Thương hiệu / NCC</label>
-                                <input type="text" id="vt-hang" required placeholder="Hòa Phát, Cadivi..." class="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:border-blue-500 transition">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-indigo-700 uppercase tracking-wider mb-1">Quy cách kỹ thuật tiêu chuẩn</label>
-                            <input type="text" id="vt-quycach" required placeholder="Ví dụ: Ø49x6m..." class="w-full rounded-xl border-2 border-indigo-200 py-2 px-3 text-sm focus:border-blue-500 font-semibold text-slate-800">
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold text-amber-600 uppercase tracking-wider mb-1">Số lượng cần xuất</label>
-                                <input type="number" id="vt-soluongcan" min="0" value="0" class="w-full rounded-xl border border-amber-300 bg-amber-50 py-2 px-3 text-sm focus:border-amber-500 transition font-bold text-amber-800">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Mức tồn cảnh báo</label>
-                                <input type="number" id="vt-safety" required value="10" class="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:border-blue-500 transition">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">TG đặt hàng</label>
-                                <input type="text" id="vt-time" placeholder="3 ngày, 1 tuần..." class="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:border-blue-500 transition">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Ghi chú ứng dụng</label>
-                            <textarea id="vt-note" rows="2" placeholder="Sử dụng inox 304..." class="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:border-blue-500 transition"></textarea>
-                        </div>
-
-                        <div class="pt-3 border-t border-slate-100 flex justify-end space-x-2">
-                            <button type="button" onclick="closeModal('add-vattu-modal')" class="px-4 py-2 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 text-sm font-medium transition">Hủy</button>
-                            <button type="submit" id="btn-vattu-submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium transition shadow-sm">Lưu Dữ Liệu</button>
-                        </div>
-                    </form>
+                <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('export-modal')" class="px-4 py-2 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-100 text-sm font-medium transition">Hủy bỏ</button>
+                    <button type="button" onclick="executeExport('excel')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-medium transition shadow-sm flex items-center">
+                        <i class="fa-solid fa-file-excel mr-1.5"></i>Tải Xuất Excel
+                    </button>
+                    <button type="button" onclick="executeExport('pdf')" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-sm font-medium transition shadow-sm flex items-center">
+                        <i class="fa-solid fa-file-pdf mr-1.5"></i>Tải Xuất PDF
+                    </button>
                 </div>
             </div>
         </div>
@@ -8162,7 +8083,6 @@
                 return showToast("Bạn chưa nhập số lượng cần xuất cho bất kỳ vật tư nào!", "warning");
             }
 
-            // Reset toàn bộ form
             document.getElementById('export-ngay').valueAsDate = new Date();
             document.getElementById('export-so').value = "";
             document.getElementById('export-lydo').value = "";
@@ -8174,18 +8094,18 @@
             const container = document.getElementById('export-categories-container');
             
             let html = `
-                <label class="flex items-center space-x-2 mb-2 pb-2 border-b border-slate-200 cursor-pointer">
+                <label class="flex items-center space-x-2 mb-1.5 pb-1.5 border-b border-slate-200 cursor-pointer">
                     <input type="checkbox" id="export-check-all" checked onchange="toggleAllExportCategories(this)" class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 cursor-pointer">
-                    <span class="text-sm font-bold text-slate-800">Chọn tất cả hạng mục</span>
+                    <span class="text-xs font-bold text-slate-800">Chọn tất cả</span>
                 </label>
-                <div class="space-y-2 pl-1">
+                <div class="space-y-1.5 pl-0.5">
             `;
 
             categories.forEach(cat => {
                 html += `
                     <label class="flex items-center space-x-2 cursor-pointer">
-                        <input type="checkbox" value="${cat}" checked class="export-category-cb rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 cursor-pointer">
-                        <span class="text-sm font-medium text-slate-700">${cat}</span>
+                        <input type="checkbox" value="${cat}" checked onchange="updateExportPreview()" class="export-category-cb rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 cursor-pointer">
+                        <span class="text-xs font-medium text-slate-700">${cat}</span>
                     </label>
                 `;
             });
@@ -8193,11 +8113,122 @@
             container.innerHTML = html;
 
             openModal('export-modal');
+            updateExportPreview(); // Gọi hàm render Live Preview ngay khi mở
         }
 
         function toggleAllExportCategories(source) {
             const checkboxes = document.querySelectorAll('.export-category-cb');
             checkboxes.forEach(cb => cb.checked = source.checked);
+            updateExportPreview(); // Cập nhật lại Preview khi bấm chọn tất cả
+        }
+        function updateExportPreview() {
+            const checkboxes = document.querySelectorAll('.export-category-cb:checked');
+            const selectedCategories = Array.from(checkboxes).map(cb => cb.value);
+
+            const dataToExport = dataset_danhmuc.filter(item => 
+                item.soluongcan && parseFloat(item.soluongcan) > 0 && selectedCategories.includes(item.hangmuc)
+            );
+
+            const soPhieu = document.getElementById('export-so').value.trim() || ".......";
+            const lydo = document.getElementById('export-lydo').value.trim() || "....................................................................................";
+            const nguoiLap = document.getElementById('export-nguoilap').value.trim() || "";
+            const phuTrach = document.getElementById('export-phutrach').value.trim() || "";
+            const giamDoc = document.getElementById('export-giamdoc').value.trim() || "";
+
+            const ngayInput = document.getElementById('export-ngay').value;
+            let ngayStr = "Ngày ... tháng ... năm .....";
+            if (ngayInput) {
+                const d = new Date(ngayInput);
+                ngayStr = `Ngày ${String(d.getDate()).padStart(2, '0')} tháng ${String(d.getMonth() + 1).padStart(2, '0')} năm ${d.getFullYear()}`;
+            }
+
+            const previewPane = document.getElementById('live-preview-pane');
+            
+            let tableRowsHtml = "";
+            if (dataToExport.length === 0) {
+                tableRowsHtml = `<tr><td colspan="7" style="border: 1px solid #000; padding: 10px; text-align: center; color: #888; font-style: italic;">Chưa chọn hạng mục nào để xuất dữ liệu...</td></tr>`;
+            } else {
+                dataToExport.forEach((item, idx) => {
+                    tableRowsHtml += `
+                        <tr>
+                            <td style="border: 1px solid #000; padding: 6px; text-align: center;">${idx + 1}</td>
+                            <td style="border: 1px solid #000; padding: 6px;">${item.hangmuc}</td>
+                            <td style="border: 1px solid #000; padding: 6px; font-weight: bold;">${item.ten}</td>
+                            <td style="border: 1px solid #000; padding: 6px;">${item.quycach}</td>
+                            <td style="border: 1px solid #000; padding: 6px; text-align: center;">${item.dvt}</td>
+                            <td style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; color: #b45309;">${item.soluongcan}</td>
+                            <td style="border: 1px solid #000; padding: 6px;"></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            previewPane.innerHTML = `
+                <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px;">
+                    <div style="width: 25%;">
+                        <img src="./images/VAS.png" style="max-width: 120px; height: auto;" alt="VAS Logo" onerror="this.style.display='none'">
+                        <div style="font-size: 9px; color: #555; font-family: sans-serif; margin-top: 2px; display: none;" id="preview-logo-fallback">[ LOGO VAS ]</div>
+                    </div>
+                    <div style="width: 50%; text-align: center;">
+                        <h2 style="font-size: 18px; font-weight: bold; margin: 0 0 3px 0; letter-spacing: 0.5px;">PHIẾU YÊU CẦU CẤP VẬT TƯ</h2>
+                        <div style="font-size: 12px; font-weight: bold; margin-bottom: 2px;">Số: <span style="color: #2563eb;">${soPhieu}</span></div>
+                        <div style="font-size: 12px; font-style: italic;">${ngayStr}</div>
+                    </div>
+                    <div style="width: 25%;"></div>
+                </div>
+
+                <div style="font-size: 12px; font-weight: bold; margin-bottom: 12px; text-align: left;">
+                    Lý do đề nghị: <span style="font-weight: normal; font-style: italic; color: #374151;">${lydo}</span>
+                </div>
+
+                <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 20px;">
+                    <thead>
+                        <tr style="background-color: #f8fafc;">
+                            <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 5%;">STT</th>
+                            <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 15%;">HẠNG MỤC</th>
+                            <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 30%;">VẬT TƯ THIẾT BỊ</th>
+                            <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 25%;">QUY CÁCH KỸ THUẬT</th>
+                            <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 8%;">ĐVT</th>
+                            <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 12%;">SL YÊU CẦU</th>
+                            <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 15%;">GHI CHÚ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRowsHtml}
+                    </tbody>
+                </table>
+
+                <div style="display: flex; justify-content: space-between; margin-top: 25px; font-weight: bold; text-align: center; font-size: 12px;">
+                    <div style="width: 30%;">
+                        <p style="margin: 0;">Người lập biểu</p>
+                        <p style="font-weight: normal; font-style: italic; font-size: 10px; margin: 2px 0 0 0;">(Ký, ghi rõ họ tên)</p>
+                        <p style="margin-top: 50px; font-size: 12px; color: #1e3a8a; font-weight: bold; min-height: 18px;">${nguoiLap}</p>
+                    </div>
+                    <div style="width: 30%;">
+                        <p style="margin: 0;">Phụ trách bộ phận</p>
+                        <p style="font-weight: normal; font-style: italic; font-size: 10px; margin: 2px 0 0 0;">(Ký, ghi rõ họ tên)</p>
+                        <p style="margin-top: 50px; font-size: 12px; color: #1e3a8a; font-weight: bold; min-height: 18px;">${phuTrach}</p>
+                    </div>
+                    <div style="width: 30%;">
+                        <p style="margin: 0;">Ban Giám đốc</p>
+                        <p style="font-weight: normal; font-style: italic; font-size: 10px; margin: 2px 0 0 0;">(Ký, ghi rõ họ tên)</p>
+                        <p style="margin-top: 50px; font-size: 12px; color: #1e3a8a; font-weight: bold; min-height: 18px;">${giamDoc}</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 25px; font-size: 10px; text-align: left; font-weight: normal; font-style: italic; color: #666; border-top: 1px dashed #ddd; padding-top: 5px;">
+                    WH-P01-F06 (00-06/06/2024)
+                </div>
+            `;
+            
+            const previewImg = previewPane.querySelector('img');
+            if(previewImg) {
+                previewImg.onerror = function() {
+                    this.style.display = 'none';
+                    const fallback = document.getElementById('preview-logo-fallback');
+                    if(fallback) fallback.style.display = 'block';
+                };
+            }
         }
 
         async function executeExport(type) {
