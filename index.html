@@ -7990,16 +7990,15 @@
 
             const workbook = new ExcelJS.Workbook();
             
-            // Khởi tạo Sheet kèm cấu hình trang in tối ưu
             const sheet = workbook.addWorksheet('Phieu_Yeu_Cau', {
                 pageSetup: {
-                    paperSize: 9, // A4
-                    orientation: 'landscape', // In ngang
+                    paperSize: 9, 
+                    orientation: 'landscape', 
                     fitToPage: true, 
-                    fitToWidth: 1, // Ép vừa khít 1 trang theo chiều ngang
-                    fitToHeight: 999, // Cho phép kéo dài thành nhiều trang theo chiều dọc nếu dữ liệu nhiều
-                    horizontalCentered: true, // Căn giữa nội dung tuyệt đối
-                    margins: { // Thu hẹp lề một chút để nội dung có không gian thở, tránh rớt dòng nhiều
+                    fitToWidth: 1, 
+                    fitToHeight: 999, 
+                    horizontalCentered: true, 
+                    margins: { 
                         left: 0.25, right: 0.25,
                         top: 0.5, bottom: 0.5,
                         header: 0.3, footer: 0.3
@@ -8007,7 +8006,6 @@
                 }
             });
 
-            // 1. Cấu hình chiều rộng các cột
             sheet.columns = [
                 { width: 6 },  // A: STT
                 { width: 22 }, // B: HẠNG MỤC
@@ -8018,7 +8016,6 @@
                 { width: 22 }  // G: GHI CHÚ
             ];
 
-            // 2. Chèn Logo VAS vào góc trái (A1:B3)
             try {
                 const response = await fetch('./images/VAS.png');
                 if (response.ok) {
@@ -8031,8 +8028,8 @@
                     
                     const logoId = workbook.addImage({ base64: base64, extension: 'png' });
                     sheet.addImage(logoId, {
-                        tl: { col: 0.6, row: 0.5 }, 
-                        br: { col: 2.5, row: 3.8 }, 
+                        tl: { col: 0.1, row: 0.1 }, 
+                        br: { col: 1.9, row: 2.9 }, 
                         editAs: 'oneCell' 
                     });
                 }
@@ -8040,7 +8037,6 @@
                 console.log("Cảnh báo: Không thể nạp logo vào Excel.", error);
             }
 
-            // 3. Xử lý Cụm Tiêu Đề Căn Giữa
             sheet.mergeCells('C1:E1');
             sheet.mergeCells('C2:E2');
             sheet.mergeCells('C3:E3');
@@ -8060,43 +8056,38 @@
             ngayCell.font = { name: 'Times New Roman', size: 12, bold: true };
             ngayCell.alignment = { vertical: 'middle', horizontal: 'center' };
 
-            // 4. Lý do đề nghị (Bật Wrap text để lý do dài không bị che)
             sheet.mergeCells('A5:G5');
             const lydoCell = sheet.getCell('A5');
             lydoCell.value = `Lý do đề nghị: ${meta.lydo}`;
             lydoCell.font = { name: 'Times New Roman', size: 12, bold: true };
             lydoCell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
-            sheet.getRow(5).height = 25; // Nới rộng nhẹ dòng này
+            sheet.getRow(5).height = 25; 
 
-            // 5. Khởi tạo Header Bảng (Dòng 7)
             const headerRow = sheet.getRow(7);
             headerRow.values = ["STT", "HẠNG MỤC", "VẬT TƯ THIẾT BỊ", "QUY CÁCH KỸ THUẬT", "ĐVT", "SỐ LƯỢNG YÊU CẦU", "GHI CHÚ"];
             headerRow.font = { name: 'Times New Roman', size: 11, bold: true };
             
-            // Kẻ khung mỏng và bật wrapText cho Header
             ['A','B','C','D','E','F','G'].forEach(col => {
                 const cell = sheet.getCell(`${col}7`);
                 cell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
                 cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
             });
 
-            // 6. Đổ Dữ Liệu Bảng & Cấu Hình Wrap Text
             let currentRow = 8;
             data.forEach((item, index) => {
                 const row = sheet.getRow(currentRow);
+                // CHỈNH SỬA Ở ĐÂY: Thay item.note bằng chuỗi rỗng ""
                 row.values = [
-                    index + 1, item.hangmuc, item.ten, item.quycach, item.dvt, parseFloat(item.soluongcan), item.note || ""
+                    index + 1, item.hangmuc, item.ten, item.quycach, item.dvt, parseFloat(item.soluongcan), ""
                 ];
                 row.font = { name: 'Times New Roman', size: 11 };
                 
-                // Mặc định tất cả các ô trong dòng đều xuống dòng tự động (wrapText)
                 ['A','B','C','D','E','F','G'].forEach(col => {
                     const cell = sheet.getCell(`${col}${currentRow}`);
                     cell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
                     cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true }; 
                 });
 
-                // Căn giữa riêng biệt cho STT, ĐVT và Số lượng
                 sheet.getCell(`A${currentRow}`).alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
                 sheet.getCell(`E${currentRow}`).alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
                 sheet.getCell(`F${currentRow}`).alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
@@ -8104,7 +8095,6 @@
                 currentRow++;
             });
 
-            // 7. Khu Vực Chữ Ký
             currentRow += 2; 
             sheet.mergeCells(`A${currentRow}:B${currentRow}`);
             sheet.mergeCells(`C${currentRow}:E${currentRow}`);
@@ -8135,19 +8125,17 @@
                 cell.alignment = { horizontal: 'center' };
             });
 
-            // 8. Chân trang (Footer form)
             currentRow += 4;
             sheet.mergeCells(`A${currentRow}:C${currentRow}`);
             const footerCell = sheet.getCell(`A${currentRow}`);
             footerCell.value = "WH-P01-F06 (00-06/06/2024)";
             footerCell.font = { name: 'Times New Roman', size: 10, italic: true };
 
-            // 9. Xuất file bằng FileSaver
             const safeSoPhieu = meta.soPhieu.replace(/[^a-z0-9-]/gi, '_').toLowerCase() || 'phieu_yeu_cau';
             const buffer = await workbook.xlsx.writeBuffer();
             saveAs(new Blob([buffer]), `PhieuYeuCau_${safeSoPhieu}.xlsx`);
             
-            showToast("Đã tải xuống file Excel chuẩn in A4!", "success");
+            showToast("Đã tải xuống file Excel!", "success");
         }
 
         function generatePDF(data, meta) {
