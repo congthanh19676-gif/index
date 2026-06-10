@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
@@ -7946,7 +7947,7 @@
             checkboxes.forEach(cb => cb.checked = source.checked);
         }
 
-        function executeExport(type) {
+        async function executeExport(type) {
             const checkboxes = document.querySelectorAll('.export-category-cb:checked');
             const selectedCategories = Array.from(checkboxes).map(cb => cb.value);
 
@@ -7958,7 +7959,6 @@
                 item.soluongcan && parseFloat(item.soluongcan) > 0 && selectedCategories.includes(item.hangmuc)
             );
 
-            // Thu thập thông tin từ Form
             const soPhieu = document.getElementById('export-so').value.trim() || "...";
             const lydo = document.getElementById('export-lydo').value.trim() || ".............................................";
             const ngayInput = document.getElementById('export-ngay').value;
@@ -7971,113 +7971,164 @@
 
             const metaData = { soPhieu, ngayStr, lydo };
 
-            if (type === 'excel') generateExcel(dataToExport, metaData);
-            else if (type === 'pdf') generatePDF(dataToExport, metaData);
+            if (type === 'excel') {
+                await generateExcel(dataToExport, metaData);
+            } else if (type === 'pdf') {
+                generatePDF(dataToExport, metaData);
+            }
             
             closeModal('export-modal');
         }
 
-        function generateExcel(data, meta) {
-            const ws_data = [
-                // Khối Header (Dòng 1 đến 3) - Phân bổ giống bố cục Flexbox trên PDF
-                ["[ LOGO VAS ]", "", "PHIẾU YÊU CẦU CẤP VẬT TƯ", "", "", "", ""],
-                ["", "", `Số: ${meta.soPhieu}`, "", "", "", ""],
-                ["", "", `${meta.ngayStr}`, "", "", "", ""],
-                
-                // Dòng trống cách điệu
-                ["", "", "", "", "", "", ""], 
-                
-                // Lý do đề nghị
-                [`Lý do đề nghị: ${meta.lydo}`, "", "", "", "", "", ""],
-                
-                // Dòng trống cách điệu
-                ["", "", "", "", "", "", ""], 
-                
-                // Dòng tiêu đề bảng (Dòng 7)
-                ["STT", "HẠNG MỤC", "VẬT TƯ THIẾT BỊ", "QUY CÁCH KỸ THUẬT", "ĐVT", "SỐ LƯỢNG YÊU CẦU", "GHI CHÚ"]
+        async function generateExcel(data, meta) {
+            showToast("Đang xử lý Form Excel chuẩn hóa...", "info");
+
+            const workbook = new ExcelJS.Workbook();
+            const sheet = workbook.addWorksheet('Phieu_Yeu_Cau');
+
+            // 1. Cấu hình chiều rộng các cột (Khớp với PDF)
+            sheet.columns = [
+                { width: 8 },  // A: STT
+                { width: 25 }, // B: HẠNG MỤC
+                { width: 35 }, // C: VẬT TƯ
+                { width: 35 }, // D: QUY CÁCH
+                { width: 12 }, // E: ĐVT
+                { width: 22 }, // F: SỐ LƯỢNG
+                { width: 25 }  // G: GHI CHÚ
             ];
 
-            // Đổ dữ liệu từ bảng vào
-            data.forEach((item, index) => {
-                ws_data.push([
-                    index + 1,
-                    item.hangmuc,
-                    item.ten,
-                    item.quycach,
-                    item.dvt,
-                    parseFloat(item.soluongcan),
-                    item.note || ""
-                ]);
+            // 2. Chèn Logo VAS vào góc trái (A1:B3)
+            try {
+                const response = await fetch('./images/VAS.png');
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const base64 = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve(reader.result);
+                        reader.readAsDataURL(blob);
+                    });
+                    
+                    const logoId = workbook.addImage({
+                        base64: base64,
+                        extension: 'png',
+                    });
+
+                    // Đặt ảnh vào khung ô (tl: Top-Left, br: Bottom-Right)
+                    sheet.addImage(logoId, {
+                        tl: { col: 0.1, row: 0.1 }, // Cột A, Dòng 1 (nhích vào 1 chút cho đẹp)
+                        br: { col: 1.9, row: 2.9 }, // Cột B, Dòng 3
+                        editAs: 'oneCell' 
+                    });
+                }
+            } catch (error) {
+                console.log("Cảnh báo: Không thể nạp logo vào Excel.", error);
+            }
+
+            // 3. Xử lý Cụm Tiêu Đề Căn Giữa (Cột C đến E)
+            sheet.mergeCells('C1:E1');
+            sheet.mergeCells('C2:E2');
+            sheet.mergeCells('C3:E3');
+
+            const titleCell = sheet.getCell('C1');
+            titleCell.value = "PHIẾU YÊU CẦU CẤP VẬT TƯ";
+            titleCell.font = { name: 'Times New Roman', size: 16, bold: true };
+            titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+            const soCell = sheet.getCell('C2');
+            soCell.value = `Số: ${meta.soPhieu}`;
+            soCell.font = { name: 'Times New Roman', size: 12, bold: true };
+            soCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+            const ngayCell = sheet.getCell('C3');
+            ngayCell.value = meta.ngayStr;
+            ngayCell.font = { name: 'Times New Roman', size: 12, bold: true };
+            ngayCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+            // 4. Lý do đề nghị
+            sheet.mergeCells('A5:G5');
+            const lydoCell = sheet.getCell('A5');
+            lydoCell.value = `Lý do đề nghị: ${meta.lydo}`;
+            lydoCell.font = { name: 'Times New Roman', size: 12, bold: true };
+
+            // 5. Khởi tạo Header Bảng (Dòng 7)
+            const headerRow = sheet.getRow(7);
+            headerRow.values = ["STT", "HẠNG MỤC", "VẬT TƯ THIẾT BỊ", "QUY CÁCH KỸ THUẬT", "ĐVT", "SỐ LƯỢNG YÊU CẦU", "GHI CHÚ"];
+            headerRow.font = { name: 'Times New Roman', size: 11, bold: true };
+            headerRow.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+            
+            // Kẻ khung mỏng cho Header
+            ['A','B','C','D','E','F','G'].forEach(col => {
+                sheet.getCell(`${col}7`).border = {
+                    top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}
+                };
             });
 
-            // Lấy vị trí dòng hiện tại sau khi đổ xong dữ liệu bảng
-            let currentRow = ws_data.length;
-
-            // Thêm các khoảng trắng trước khi tới phần chữ ký
-            ws_data.push(["", "", "", "", "", "", ""]);
-            ws_data.push(["", "", "", "", "", "", ""]);
-
-            // Khối Chữ ký dàn đều 3 góc (Trái - Giữa - Phải)
-            ws_data.push(["Người lập biểu", "", "Phụ trách bộ phận", "", "", "Ban Giám đốc", ""]);
-            ws_data.push(["(Ký, ghi rõ họ tên)", "", "(Ký, ghi rõ họ tên)", "", "", "(Ký, ghi rõ họ tên)", ""]);
-            
-            // Lùi khoảng trống cho người dùng ký tay
-            ws_data.push(["", "", "", "", "", "", ""]);
-            ws_data.push(["", "", "", "", "", "", ""]);
-            ws_data.push(["", "", "", "", "", "", ""]);
-            ws_data.push(["", "", "", "", "", "", ""]);
-
-            // Footer (Mã biểu mẫu)
-            ws_data.push(["WH-P01-F06 (00-06/06/2024)", "", "", "", "", "", ""]);
-
-            const ws = XLSX.utils.aoa_to_sheet(ws_data);
-
-            // Cấu hình gộp ô (Merge Cells) để định hình lại toàn bộ layout
-            ws['!merges'] = [
-                // Khối Header: Gộp ô cho khu vực Logo (Cột A -> B)
-                { s: { r: 0, c: 0 }, e: { r: 2, c: 1 } }, 
-                // Khối Header: Gộp ô cho Cụm Tiêu Đề (Cột C -> E)
-                { s: { r: 0, c: 2 }, e: { r: 0, c: 4 } }, 
-                { s: { r: 1, c: 2 }, e: { r: 1, c: 4 } }, 
-                { s: { r: 2, c: 2 }, e: { r: 2, c: 4 } }, 
+            // 6. Đổ Dữ Liệu Bảng & Kẻ Khung
+            let currentRow = 8;
+            data.forEach((item, index) => {
+                const row = sheet.getRow(currentRow);
+                row.values = [
+                    index + 1, item.hangmuc, item.ten, item.quycach, item.dvt, parseFloat(item.soluongcan), item.note || ""
+                ];
+                row.font = { name: 'Times New Roman', size: 11 };
                 
-                // Khối Lý do đề nghị: Trải dài từ Cột A -> G
-                { s: { r: 4, c: 0 }, e: { r: 4, c: 6 } }, 
+                // Căn giữa các cột số liệu
+                sheet.getCell(`A${currentRow}`).alignment = { horizontal: 'center', vertical: 'middle' };
+                sheet.getCell(`E${currentRow}`).alignment = { horizontal: 'center', vertical: 'middle' };
+                sheet.getCell(`F${currentRow}`).alignment = { horizontal: 'center', vertical: 'middle' };
 
-                // Khối Chữ ký - Phân bổ vị trí y hệt PDF
-                // Người lập biểu (Cột A -> B)
-                { s: { r: currentRow + 2, c: 0 }, e: { r: currentRow + 2, c: 1 } }, 
-                { s: { r: currentRow + 3, c: 0 }, e: { r: currentRow + 3, c: 1 } }, 
-                // Phụ trách bộ phận (Cột C -> E)
-                { s: { r: currentRow + 2, c: 2 }, e: { r: currentRow + 2, c: 4 } }, 
-                { s: { r: currentRow + 3, c: 2 }, e: { r: currentRow + 3, c: 4 } }, 
-                // Ban Giám đốc (Cột F -> G)
-                { s: { r: currentRow + 2, c: 5 }, e: { r: currentRow + 2, c: 6 } }, 
-                { s: { r: currentRow + 3, c: 5 }, e: { r: currentRow + 3, c: 6 } },  
+                ['A','B','C','D','E','F','G'].forEach(col => {
+                    sheet.getCell(`${col}${currentRow}`).border = {
+                        top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}
+                    };
+                });
+                currentRow++;
+            });
 
-                // Khối Footer
-                { s: { r: currentRow + 8, c: 0 }, e: { r: currentRow + 8, c: 2 } }
-            ];
-
-            // Tinh chỉnh độ rộng cột sao cho nội dung không bị che khuất
-            ws['!cols'] = [
-                {wch: 6},   // Cột A: STT
-                {wch: 22},  // Cột B: HẠNG MỤC
-                {wch: 35},  // Cột C: VẬT TƯ THIẾT BỊ
-                {wch: 35},  // Cột D: QUY CÁCH KỸ THUẬT
-                {wch: 10},  // Cột E: ĐVT
-                {wch: 22},  // Cột F: SỐ LƯỢNG YÊU CẦU
-                {wch: 20}   // Cột G: GHI CHÚ
-            ];
-
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Phieu_Yeu_Cau");
+            // 7. Khu Vực Chữ Ký (Dàn đều 3 góc y hệt PDF)
+            currentRow += 2; 
+            sheet.mergeCells(`A${currentRow}:B${currentRow}`);
+            sheet.mergeCells(`C${currentRow}:E${currentRow}`);
+            sheet.mergeCells(`F${currentRow}:G${currentRow}`);
             
-            // Xử lý loại bỏ ký tự đặc biệt trong Số phiếu để làm tên file hợp lệ
+            sheet.getCell(`A${currentRow}`).value = "Người lập biểu";
+            sheet.getCell(`C${currentRow}`).value = "Phụ trách bộ phận";
+            sheet.getCell(`F${currentRow}`).value = "Ban Giám đốc";
+            
+            ['A', 'C', 'F'].forEach(col => {
+                const cell = sheet.getCell(`${col}${currentRow}`);
+                cell.font = { name: 'Times New Roman', size: 12, bold: true };
+                cell.alignment = { horizontal: 'center' };
+            });
+
+            currentRow++;
+            sheet.mergeCells(`A${currentRow}:B${currentRow}`);
+            sheet.mergeCells(`C${currentRow}:E${currentRow}`);
+            sheet.mergeCells(`F${currentRow}:G${currentRow}`);
+
+            sheet.getCell(`A${currentRow}`).value = "(Ký, ghi rõ họ tên)";
+            sheet.getCell(`C${currentRow}`).value = "(Ký, ghi rõ họ tên)";
+            sheet.getCell(`F${currentRow}`).value = "(Ký, ghi rõ họ tên)";
+
+            ['A', 'C', 'F'].forEach(col => {
+                const cell = sheet.getCell(`${col}${currentRow}`);
+                cell.font = { name: 'Times New Roman', size: 11, italic: true };
+                cell.alignment = { horizontal: 'center' };
+            });
+
+            // 8. Chân trang (Footer form)
+            currentRow += 4;
+            sheet.mergeCells(`A${currentRow}:C${currentRow}`);
+            const footerCell = sheet.getCell(`A${currentRow}`);
+            footerCell.value = "WH-P01-F06 (00-06/06/2024)";
+            footerCell.font = { name: 'Times New Roman', size: 10, italic: true };
+
+            // 9. Xuất file bằng FileSaver
             const safeSoPhieu = meta.soPhieu.replace(/[^a-z0-9-]/gi, '_').toLowerCase() || 'phieu_yeu_cau';
-            XLSX.writeFile(wb, `PhieuYeuCau_${safeSoPhieu}.xlsx`);
+            const buffer = await workbook.xlsx.writeBuffer();
+            saveAs(new Blob([buffer]), `PhieuYeuCau_${safeSoPhieu}.xlsx`);
             
-            showToast("Đã tải xuống file Excel với Form chuẩn!", "success");
+            showToast("Đã tải xuống file Excel với định dạng chuẩn!", "success");
         }
 
         function generatePDF(data, meta) {
