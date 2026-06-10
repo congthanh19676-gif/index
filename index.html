@@ -7777,13 +7777,54 @@
     }
 ];
 
-        let dataset_danhmuc = JSON.parse(localStorage.getItem('solar_epc_data')) || default_dataset;
+        // Xóa dòng let dataset_danhmuc = ... cũ và thay bằng khối này:
+        let dataset_danhmuc = JSON.parse(localStorage.getItem('solar_epc_data'));
+
+        // Hàm đồng bộ thông minh
+        function autoSyncData() {
+            if (!dataset_danhmuc || dataset_danhmuc.length === 0) {
+                // Lần đầu mở web: Lấy toàn bộ data gốc
+                dataset_danhmuc = JSON.parse(JSON.stringify(default_dataset));
+                saveToLocalStorage();
+            } else {
+                let isModified = false;
+
+                // Quét qua mảng data gốc trong code để đối chiếu
+                default_dataset.forEach(defaultItem => {
+                    const existingIndex = dataset_danhmuc.findIndex(item => item.id === defaultItem.id);
+                    
+                    if (existingIndex === -1) {
+                        // TRƯỜNG HỢP 1: Phát hiện mã vật tư mới thêm vào code -> Bổ sung ngay
+                        dataset_danhmuc.push(JSON.parse(JSON.stringify(defaultItem)));
+                        isModified = true;
+                    } else {
+                        // TRƯỜNG HỢP 2: Mã đã tồn tại -> Cập nhật tên, quy cách mới nhất từ code 
+                        // nhưng PHẢI GIỮ LẠI "SL Cần" mà người dùng đang nhập
+                        const preservedSlCan = dataset_danhmuc[existingIndex].soluongcan || 0;
+                        
+                        // Kiểm tra xem cấu trúc có thay đổi không để tránh ghi đè liên tục
+                        if (JSON.stringify(dataset_danhmuc[existingIndex]) !== JSON.stringify(Object.assign({}, defaultItem, { soluongcan: preservedSlCan }))) {
+                            dataset_danhmuc[existingIndex] = Object.assign({}, defaultItem, { soluongcan: preservedSlCan });
+                            isModified = true;
+                        }
+                    }
+                });
+
+                // Nếu có bất kỳ sự thay đổi/bổ sung nào, tự động lưu lại vào trình duyệt
+                if (isModified) {
+                    saveToLocalStorage();
+                    console.log("Hệ thống đã tự động đồng bộ dữ liệu vật tư mới nhất từ mã nguồn.");
+                }
+            }
+        }
 
         function saveToLocalStorage() {
             localStorage.setItem('solar_epc_data', JSON.stringify(dataset_danhmuc));
         }
 
+        // Cập nhật lại window.onload để chạy hàm autoSyncData() đầu tiên
         window.onload = function() {
+            autoSyncData(); // Kích hoạt đồng bộ trước khi vẽ giao diện
             syncFiltersAndDropdowns();
             renderDanhMuc();
             updateDashboardMetrics();
