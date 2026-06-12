@@ -149,21 +149,19 @@
                     <p class="text-xs text-slate-400">Nhập số lượng ở cột "SL Cần" trên bảng để xuất Phiếu Yêu Cầu.</p>
                 </div>
                 <div class="flex flex-wrap gap-2">
-    <button onclick="exportCodeSource()" class="bg-slate-700 hover:bg-slate-800 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
-        <i class="fa-solid fa-code"></i> <span>Xuất Backup Code</span>
-    </button>
-    <button onclick="openExportModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
-        <i class="fa-solid fa-file-export"></i> <span>Xuất Phiếu BOM (Excel/PDF)</span>
-    </button>
-    
-    <button onclick="resetAllSoLuongCan()" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
-        <i class="fa-solid fa-arrow-rotate-left"></i> <span>Reset SL Cần & Ghi chú</span>
-    </button>
-    
-    <button onclick="openModal('add-vattu-modal')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
-        <i class="fa-solid fa-plus"></i> <span>Thêm Mới</span>
-    </button>
-</div>
+                    <button onclick="exportCodeSource()" class="bg-slate-700 hover:bg-slate-800 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
+                        <i class="fa-solid fa-code"></i> <span>Xuất Backup Code</span>
+                    </button>
+                    <button onclick="openExportModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
+                        <i class="fa-solid fa-file-export"></i> <span>Xuất Phiếu BOM (Excel/PDF)</span>
+                    </button>
+                    <button onclick="resetAllSoLuongCan()" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
+                        <i class="fa-solid fa-arrow-rotate-left"></i> <span>Reset SL Cần & Ghi chú</span>
+                    </button>
+                    <button onclick="openModal('add-vattu-modal')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
+                        <i class="fa-solid fa-plus"></i> <span>Thêm Mới</span>
+                    </button>
+                </div>
             </div>
 
             <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -229,8 +227,36 @@
                 <div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 max-h-[calc(100vh-160px)] overflow-y-auto">
                     <div class="lg:col-span-5 space-y-4">
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3.5">
-                            <span class="text-xs font-bold text-blue-700 tracking-wider uppercase block"><i class="fa-solid fa-circle-info mr-1"></i>Thông tin phiếu</span>
-                            <div class="grid grid-cols-2 gap-3">
+                            <span class="text-xs font-bold text-blue-700 tracking-wider uppercase block"><i class="fa-solid fa-circle-info mr-1"></i>Thông tin phiếu & Cấu hình Tên File</span>
+                            
+                            <!-- BỔ SUNG: Dropdown chọn loại biểu mẫu -->
+                            <div class="mb-3">
+                                <label class="block text-xs font-bold text-indigo-700 mb-1">Loại biểu mẫu cần xuất:</label>
+                                <select id="export-loaiphieu" onchange="updateExportPreview()" class="w-full rounded-lg border-2 border-indigo-200 py-1.5 px-3 text-sm focus:border-indigo-500 focus:outline-none bg-indigo-50 font-bold text-indigo-800 transition cursor-pointer">
+                                    <option value="PHIẾU YÊU CẦU CẤP VẬT TƯ">1. Phiếu Yêu Cầu Cấp Vật Tư</option>
+                                    <option value="PHIẾU YÊU CẦU NHẬP VẬT TƯ VỀ KHO">2. Phiếu Yêu Cầu Nhập Vật Tư Về Kho</option>
+                                    <option value="PHIẾU THỐNG KÊ SỐ LƯỢNG VẬT TƯ ĐÃ THI CÔNG">3. Phiếu Thống Kê Số Lượng Vật Tư Đã Thi CÔNG</option>
+                                </select>
+                            </div>
+
+                            <div class="space-y-2">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Tên dự án:</label>
+                                    <input type="text" id="export-tenduan" oninput="updateExportPreview()" placeholder="Ví dụ: Dự án Hòa Phát" class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none bg-white transition">
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-600 mb-1">Công suất (kWp):</label>
+                                        <input type="text" id="export-congsuat" oninput="updateExportPreview()" placeholder="Ví dụ: 2000" class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none bg-white transition">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-600 mb-1">Số hiệu REV:</label>
+                                        <input type="text" id="export-rev" oninput="updateExportPreview()" placeholder="Ví dụ: 00" class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none bg-white transition">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-200">
                                 <div>
                                     <label class="block text-xs font-semibold text-slate-600 mb-1">Số phiếu:</label>
                                     <input type="text" id="export-so" oninput="updateExportPreview()" placeholder="Ví dụ: 01/YC-VT" class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none bg-white transition">
@@ -255,11 +281,11 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-slate-600 mb-1">Người xét duyệt:</label>
-                                    <input type="text" id="export-phutrach" value="Trần Quang Tuyên" oninput="updateExportPreview()" placeholder="Họ và tên..." class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none bg-white transition">
+                                    <input type="text" id="export-phutrach" value="Phạm Tùng" oninput="updateExportPreview()" placeholder="Họ và tên..." class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none bg-white transition">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-slate-600 mb-1">Thủ kho:</label>
-                                    <input type="text" id="export-giamdoc" value="Trương Quốc Hưng" oninput="updateExportPreview()" placeholder="Họ và tên..." class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none bg-white transition">
+                                    <input type="text" id="export-giamdoc" value="Hoàng Kha" oninput="updateExportPreview()" placeholder="Họ và tên..." class="w-full rounded-lg border border-slate-200 py-1.5 px-3 text-sm focus:border-emerald-500 focus:outline-none bg-white transition">
                                 </div>
                             </div>
                         </div>
@@ -291,10 +317,108 @@
         </div>
     </div>
 
+    <div id="add-vattu-modal" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true" onclick="closeModal('add-vattu-modal')">
+                <div class="absolute inset-0 bg-slate-900 opacity-60"></div>
+            </div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+                <div class="bg-white px-6 pt-6 pb-4 sm:pb-6">
+                    <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                        <h3 class="text-base font-bold text-slate-800" id="vattu-modal-title"><i class="fa-solid fa-boxes-packing mr-2 text-indigo-600"></i>Thêm Mới Vật Tư</h3>
+                        <button onclick="closeModal('add-vattu-modal')" class="text-slate-400 hover:text-slate-600 transition">
+                            <i class="fa-solid fa-xmark text-lg"></i>
+                        </button>
+                    </div>
+                    <form id="vattu-form" class="space-y-4 mt-4" onsubmit="handleNewVattu(event)">
+                        <input type="hidden" id="vt-edit-mode" value="CREATE">
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Mã định danh duy nhất</label>
+                            <input type="text" id="vt-ma" required placeholder="Ví dụ: HSE-SEAMLOCK-M8..." class="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:border-blue-500 focus:outline-none transition">
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Hệ thống / Gói thầu</label>
+                                <select id="vt-hangmuc-select" required onchange="toggleCustomCategoryInput()" class="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:border-blue-500 bg-slate-50">
+                                    <option value="Giàn giáo">Giàn giáo</option>
+                                    <option value="CÔNG CỤ DỤNG CỤ">CÔNG CỤ DỤNG CỤ</option>
+                                    <option value="CAZ">CAZ</option>
+                                    <option value="Bao che tôn sáng">Bao che tôn sáng</option>
+                                    <option value="Dây cứu sinh">Dây cứu sinh</option>
+                                    <option value="Khung giá đỡ nhôm">Khung giá đỡ nhôm</option>
+                                    <option value="Hệ thống Thang/máng cáp">Hệ thống Thang/máng cáp</option>
+                                    <option value="Lối đi bảo trì (walkway)">Lối đi bảo trì (walkway)</option>
+                                    <option value="Cáp điện DC & Đầu nối">Cáp điện DC & Đầu nối</option>
+                                    <option value="Cáp điện AC">Cáp điện AC</option>
+                                    <option value="Hệ thống rửa pin">Hệ thống rửa pin</option>
+                                    <option value="Trạm biến tần">Trạm biến tần</option>
+                                    <option value="Cảm biến môi trường">Cảm biến môi trường</option>
+                                    <option value="Hệ thống tiếp địa">Hệ thống tiếp địa</option>
+                                    <option value="Hệ thống chống sét">Hệ thống chống sét</option>
+                                    <option value="CUSTOM_NEW">-- Khác (Tạo hạng mục mới) --</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Đơn vị tính (ĐVT)</label>
+                                <input type="text" id="vt-dvt" required placeholder="Tấm, Cây, Cuộn, Cái..." class="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:border-blue-500 transition">
+                            </div>
+                        </div>
+
+                        <div id="custom-hangmuc-wrapper" class="hidden animate-pulse">
+                            <label class="block text-xs font-bold text-amber-600 uppercase tracking-wider mb-1"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Tên Hệ thống mới</label>
+                            <input type="text" id="vt-hangmuc-custom" placeholder="Nhập tên hạng mục tự tạo..." class="w-full rounded-xl border-2 border-amber-300 py-2 px-3 text-sm focus:border-blue-500 transition">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Tên Vật tư / Thiết bị</label>
+                                <input type="text" id="vt-ten" required placeholder="Sắt ống Hòa Phát..." class="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:border-blue-500 transition">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Thương hiệu / NCC</label>
+                                <input type="text" id="vt-hang" required placeholder="Hòa Phát, Cadivi..." class="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:border-blue-500 transition">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-indigo-700 uppercase tracking-wider mb-1">Quy cách kỹ thuật tiêu chuẩn</label>
+                            <input type="text" id="vt-quycach" required placeholder="Ví dụ: Ø49x6m..." class="w-full rounded-xl border-2 border-indigo-200 py-2 px-3 text-sm focus:border-blue-500 font-semibold text-slate-800">
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-amber-600 uppercase tracking-wider mb-1">Số lượng cần xuất</label>
+                                <input type="number" id="vt-soluongcan" min="0" value="0" class="w-full rounded-xl border border-amber-300 bg-amber-50 py-2 px-3 text-sm focus:border-amber-500 transition font-bold text-amber-800">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Mức tồn cảnh báo</label>
+                                <input type="number" id="vt-safety" required value="10" class="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:border-blue-500 transition">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">TG đặt hàng</label>
+                                <input type="text" id="vt-time" placeholder="3 ngày, 1 tuần..." class="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:border-blue-500 transition">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Ghi chú ứng dụng</label>
+                            <textarea id="vt-note" rows="2" placeholder="Sử dụng inox 304..." class="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:border-blue-500 transition"></textarea>
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-100 flex justify-end space-x-2">
+                            <button type="button" onclick="closeModal('add-vattu-modal')" class="px-4 py-2 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 text-sm font-medium transition">Hủy</button>
+                            <button type="submit" id="btn-vattu-submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium transition shadow-sm">Lưu Dữ Liệu</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // ==========================================
-        // KHU VỰC MẢNG DỮ LIỆU (default_dataset)
-        // ==========================================
         const default_dataset = [
     {
         "id": "HSE-GIAN-GIAO",
@@ -7805,26 +7929,22 @@
         // Xóa dòng let dataset_danhmuc = ... cũ và thay bằng khối này:
         let dataset_danhmuc = JSON.parse(localStorage.getItem('solar_epc_data'));
 
-        // Hàm đồng bộ thông minh
         function autoSyncData() {
             if (!dataset_danhmuc || dataset_danhmuc.length === 0) {
-                // Lần đầu mở web: Lấy toàn bộ data gốc
                 dataset_danhmuc = JSON.parse(JSON.stringify(default_dataset));
                 saveToLocalStorage();
             } else {
                 let isModified = false;
 
-                // Quét qua mảng data gốc trong code để đối chiếu
                 default_dataset.forEach(defaultItem => {
                     const existingIndex = dataset_danhmuc.findIndex(item => item.id === defaultItem.id);
                     
                     if (existingIndex === -1) {
-                        // TRƯỜNG HỢP 1: Phát hiện mã vật tư mới thêm vào code -> Bổ sung ngay
                         dataset_danhmuc.push(JSON.parse(JSON.stringify(defaultItem)));
                         isModified = true;
                     } else {
                         const preservedSlCan = dataset_danhmuc[existingIndex].soluongcan || 0;
-                        const preservedExportNote = dataset_danhmuc[existingIndex].exportNote || ""; // Giữ lại ghi chú
+                        const preservedExportNote = dataset_danhmuc[existingIndex].exportNote || ""; 
                         
                         const expectedObj = Object.assign({}, defaultItem, { soluongcan: preservedSlCan, exportNote: preservedExportNote });
                         if (JSON.stringify(dataset_danhmuc[existingIndex]) !== JSON.stringify(expectedObj)) {
@@ -7833,7 +7953,7 @@
                         }
                     }
                 });
-                // Đảm bảo các item cũ đã lưu cũng có thuộc tính exportNote
+
                 dataset_danhmuc.forEach(item => {
                     if(item.exportNote === undefined) {
                         item.exportNote = "";
@@ -7841,7 +7961,6 @@
                     }
                 });
 
-                // Nếu có bất kỳ sự thay đổi/bổ sung nào, tự động lưu lại vào trình duyệt
                 if (isModified) {
                     saveToLocalStorage();
                     console.log("Hệ thống đã tự động đồng bộ dữ liệu vật tư mới nhất từ mã nguồn.");
@@ -7853,9 +7972,8 @@
             localStorage.setItem('solar_epc_data', JSON.stringify(dataset_danhmuc));
         }
 
-        // Cập nhật lại window.onload để chạy hàm autoSyncData() đầu tiên
         window.onload = function() {
-            autoSyncData(); // Kích hoạt đồng bộ trước khi vẽ giao diện
+            autoSyncData();
             syncFiltersAndDropdowns();
             renderDanhMuc();
             updateDashboardMetrics();
@@ -7863,16 +7981,13 @@
         };
 
         function switchTab(tabId) {
-            // Đặt lại tất cả các nút về trạng thái không được chọn (chữ xám, nền trong suốt)
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('bg-blue-600', 'text-white', 'shadow');
                 btn.classList.add('text-slate-600', 'hover:bg-slate-100', 'hover:text-blue-600');
             });
-            // Tô màu xanh nổi bật cho nút đang được chọn
             document.getElementById('tab-' + tabId).classList.add('bg-blue-600', 'text-white', 'shadow');
             document.getElementById('tab-' + tabId).classList.remove('text-slate-600', 'hover:bg-slate-100', 'hover:text-blue-600');
 
-            // Ẩn/hiện các trang nội dung
             document.querySelectorAll('.tab-content').forEach(page => {
                 page.classList.add('hidden');
                 page.classList.remove('block');
@@ -7921,6 +8036,7 @@
                 saveToLocalStorage();
             }
         }
+
         function updateExportNote(id, value) {
             const index = dataset_danhmuc.findIndex(x => x.id === id);
             if(index !== -1) {
@@ -7933,13 +8049,14 @@
             if (confirm("Bạn có chắc chắn muốn đưa toàn bộ 'SL Cần' và 'Ghi chú' của tất cả vật tư về rỗng để làm phiếu mới?")) {
                 dataset_danhmuc.forEach(item => {
                     item.soluongcan = 0;
-                    item.exportNote = ""; // Reset thêm cả ghi chú
+                    item.exportNote = ""; 
                 });
                 saveToLocalStorage();
                 renderDanhMuc();
                 showToast("Đã reset toàn bộ số lượng cần và ghi chú thành công!", "success");
             }
         }
+
         function renderDanhMuc() {
             const tableBody = document.getElementById('danhmuc-table-body');
             tableBody.innerHTML = '';
@@ -7960,7 +8077,7 @@
 
             filtered.forEach((item, index) => {
                 const slCan = item.soluongcan || 0;
-                const exportNote = item.exportNote || ""; // Thêm dòng này
+                const exportNote = item.exportNote || "";
                 const row = document.createElement('tr');
                 row.className = 'hover:bg-slate-50 transition border-b border-slate-100';
                 row.innerHTML = `
@@ -8064,12 +8181,13 @@
             const time = document.getElementById('vt-time').value.trim();
             const soluongcan = parseFloat(document.getElementById('vt-soluongcan').value) || 0;
             const note = document.getElementById('vt-note').value.trim();
-            const exportNote = document.getElementById('vt-exportNote').value.trim();
+            const exportNote = ""; 
 
             if (editMode === "EDIT") {
                 const index = dataset_danhmuc.findIndex(x => x.id === id);
                 if (index !== -1) {
-                    dataset_danhmuc[index] = { id, hangmuc, ten, quycach, hang, dvt, safety, time, note, soluongcan, exportNote };
+                    const preservedExportNote = dataset_danhmuc[index].exportNote || "";
+                    dataset_danhmuc[index] = { id, hangmuc, ten, quycach, hang, dvt, safety, time, note, soluongcan, exportNote: preservedExportNote };
                     saveToLocalStorage();
                     showToast(`Đã điều chỉnh thông số vật tư ${id}!`, "success");
                 }
@@ -8150,10 +8268,6 @@
             showToast("Đã tải xuống file code Backup!", "success");
         }
 
-        // ==========================================
-        // KHU VỰC XỬ LÝ XUẤT FORM BOM ĐÃ CẬP NHẬT
-        // ==========================================
-
         function openExportModal() {
             const itemsWithQuantity = dataset_danhmuc.filter(item => item.soluongcan && parseFloat(item.soluongcan) > 0);
             
@@ -8161,15 +8275,19 @@
                 return showToast("Bạn chưa nhập số lượng cần xuất cho bất kỳ vật tư nào!", "warning");
             }
 
-            // Thiết lập giá trị rỗng hoặc giá trị mặc định cho Form nhập đầu vào
             document.getElementById('export-ngay').valueAsDate = new Date();
             document.getElementById('export-so').value = "";
             document.getElementById('export-lydo').value = "";
             
-            // ĐIỀU CHỈNH TẠI ĐÂY:
+            document.getElementById('export-loaiphieu').value = "PHIẾU YÊU CẦU CẤP VẬT TƯ";
+            
+            document.getElementById('export-tenduan').value = "Dự án Solar";
+            document.getElementById('export-congsuat').value = "xxxx";
+            document.getElementById('export-rev').value = "00";
+
             document.getElementById('export-nguoilap').value = "";
-            document.getElementById('export-phutrach').value = "Trần Quang Tuyên"; // Điền sẵn tên
-            document.getElementById('export-giamdoc').value = "Trương Quốc Hưng"; // Điền sẵn tên
+            document.getElementById('export-phutrach').value = "Phạm Tùng";
+            document.getElementById('export-giamdoc').value = "Hoàng Kha";
 
             const categories = [...new Set(itemsWithQuantity.map(x => x.hangmuc))];
             const container = document.getElementById('export-categories-container');
@@ -8194,16 +8312,15 @@
             container.innerHTML = html;
 
             openModal('export-modal');
-            
-            // Gọi hiển thị cấu trúc xem trước ngay khi mở modal
             updateExportPreview();
         }
 
         function toggleAllExportCategories(source) {
             const checkboxes = document.querySelectorAll('.export-category-cb');
             checkboxes.forEach(cb => cb.checked = source.checked);
-            updateExportPreview(); // Cập nhật lại Preview khi bấm chọn tất cả
+            updateExportPreview();
         }
+
         function updateExportPreview() {
             const checkboxes = document.querySelectorAll('.export-category-cb:checked');
             const selectedCategories = Array.from(checkboxes).map(cb => cb.value);
@@ -8217,6 +8334,11 @@
             const nguoiLap = document.getElementById('export-nguoilap').value.trim() || "";
             const phuTrach = document.getElementById('export-phutrach').value.trim() || "";
             const giamDoc = document.getElementById('export-giamdoc').value.trim() || "";
+            
+            const loaiPhieu = document.getElementById('export-loaiphieu').value;
+            let colSlPreview = "SL YÊU CẦU";
+            if (loaiPhieu.includes("NHẬP")) colSlPreview = "SL NHẬP KHO";
+            else if (loaiPhieu.includes("THỐNG KÊ")) colSlPreview = "SL THI CÔNG";
 
             const ngayInput = document.getElementById('export-ngay').value;
             let ngayStr = "Ngày ... tháng ... năm .....";
@@ -8228,7 +8350,6 @@
             const previewPane = document.getElementById('live-preview-pane');
             
             let tableRowsHtml = "";
-            // SỬA LẠI: Thêm class avoid-page-break và style vào thẻ <tr>
             if (dataToExport.length === 0) {
                 tableRowsHtml = `<tr><td colspan="7" style="border: 1px solid #000; padding: 10px; text-align: center; color: #888; font-style: italic;">Chưa chọn hạng mục nào để xuất dữ liệu...</td></tr>`;
             } else {
@@ -8254,7 +8375,7 @@
                         <div style="font-size: 9px; color: #555; font-family: sans-serif; margin-top: 2px; display: none;" id="preview-logo-fallback">[ LOGO VAS ]</div>
                     </div>
                     <div style="width: 50%; text-align: center;">
-                        <h2 style="font-size: 18px; font-weight: bold; margin: 0 0 3px 0; letter-spacing: 0.5px;">PHIẾU YÊU CẦU CẤP VẬT TƯ</h2>
+                        <h2 style="font-size: 18px; font-weight: bold; margin: 0 0 3px 0; letter-spacing: 0.5px;">${loaiPhieu}</h2>
                         <div style="font-size: 12px; font-weight: bold; margin-bottom: 2px;">Số: <span style="color: #2563eb;">${soPhieu}</span></div>
                         <div style="font-size: 12px; font-style: italic;">${ngayStr}</div>
                     </div>
@@ -8273,7 +8394,7 @@
                             <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 20%;">VẬT TƯ THIẾT BỊ</th>
                             <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 18%;">QUY CÁCH KỸ THUẬT</th>
                             <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 6%;">ĐVT</th>
-                            <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 10%;">SL YÊU CẦU</th>
+                            <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 10%;">${colSlPreview}</th>
                             <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 28%;">GHI CHÚ</th>
                         </tr>
                     </thead>
@@ -8329,21 +8450,48 @@
                 item.soluongcan && parseFloat(item.soluongcan) > 0 && selectedCategories.includes(item.hangmuc)
             );
 
-            // Thu thập toàn bộ thông tin đã nhập
             const soPhieu = document.getElementById('export-so').value.trim() || "...";
             const lydo = document.getElementById('export-lydo').value.trim() || ".............................................";
             const nguoiLap = document.getElementById('export-nguoilap').value.trim();
             const phuTrach = document.getElementById('export-phutrach').value.trim();
             const giamDoc = document.getElementById('export-giamdoc').value.trim();
 
+            const tenDuAn = document.getElementById('export-tenduan').value.trim() || "DuAnSolar";
+            const congSuat = document.getElementById('export-congsuat').value.trim() || "xxxx";
+            const rev = document.getElementById('export-rev').value.trim() || "00";
+            
+            const loaiPhieu = document.getElementById('export-loaiphieu').value;
+            let colSlExcel = "SỐ LƯỢNG YÊU CẦU";
+            let colSlPDF = "SỐ LƯỢNG<br>YÊU CẦU";
+            let prefixFile = "PHIEU_YEU_CAU_CAP";
+
+            if (loaiPhieu.includes("NHẬP")) {
+                colSlExcel = "SỐ LƯỢNG NHẬP KHO";
+                colSlPDF = "SỐ LƯỢNG<br>NHẬP KHO";
+                prefixFile = "PHIEU_NHAP_KHO";
+            } else if (loaiPhieu.includes("THỐNG KÊ")) {
+                colSlExcel = "SỐ LƯỢNG THI CÔNG";
+                colSlPDF = "SỐ LƯỢNG<br>THI CÔNG";
+                prefixFile = "PHIEU_THONG_KE_THI_CONG";
+            }
+
+            let hangMucFile = "Tổng hợp";
+            if (selectedCategories.length === 1) {
+                hangMucFile = selectedCategories[0];
+            }
+
             const ngayInput = document.getElementById('export-ngay').value;
             let ngayStr = "Ngày ... tháng ... năm .....";
+            let ngayFileStr = "00-00-0000";
             if (ngayInput) {
                 const d = new Date(ngayInput);
                 ngayStr = `Ngày ${String(d.getDate()).padStart(2, '0')} tháng ${String(d.getMonth() + 1).padStart(2, '0')} năm ${d.getFullYear()}`;
+                ngayFileStr = `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
             }
 
-            const metaData = { soPhieu, ngayStr, lydo, nguoiLap, phuTrach, giamDoc };
+            const finalFileName = `${tenDuAn}_${congSuat}kWp_${prefixFile}_${hangMucFile}_${ngayFileStr}_REV${rev}`;
+
+            const metaData = { soPhieu, ngayStr, lydo, nguoiLap, phuTrach, giamDoc, fileName: finalFileName, loaiPhieu, colSlExcel, colSlPDF };
 
             if (type === 'excel') {
                 await generateExcel(dataToExport, metaData);
@@ -8375,7 +8523,6 @@
                 }
             });
 
-            // Đã thu nhỏ Vật tư (22), Quy cách (20) và tăng Ghi chú (35)
             sheet.columns = [
                 { width: 5 },  // A: STT
                 { width: 18 }, // B: HẠNG MỤC
@@ -8406,7 +8553,7 @@
             sheet.mergeCells('C1:E1'); sheet.mergeCells('C2:E2'); sheet.mergeCells('C3:E3');
 
             const titleCell = sheet.getCell('C1');
-            titleCell.value = "PHIẾU YÊU CẦU CẤP VẬT TƯ";
+            titleCell.value = meta.loaiPhieu;
             titleCell.font = { name: 'Times New Roman', size: 16, bold: true };
             titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
 
@@ -8428,7 +8575,7 @@
             sheet.getRow(5).height = 25; 
 
             const headerRow = sheet.getRow(7);
-            headerRow.values = ["STT", "HẠNG MỤC", "VẬT TƯ THIẾT BỊ", "QUY CÁCH KỸ THUẬT", "ĐVT", "SỐ LƯỢNG YÊU CẦU", "GHI CHÚ"];
+            headerRow.values = ["STT", "HẠNG MỤC", "VẬT TƯ THIẾT BỊ", "QUY CÁCH KỸ THUẬT", "ĐVT", meta.colSlExcel, "GHI CHÚ"];
             headerRow.font = { name: 'Times New Roman', size: 11, bold: true };
             
             ['A','B','C','D','E','F','G'].forEach(col => {
@@ -8456,7 +8603,6 @@
                 currentRow++;
             });
 
-            // --- BẮT ĐẦU CHỈNH SỬA KHU VỰC CHỮ KÝ ---
             currentRow += 2; 
             sheet.mergeCells(`A${currentRow}:B${currentRow}`);
             sheet.mergeCells(`C${currentRow}:E${currentRow}`);
@@ -8487,7 +8633,6 @@
                 cell.alignment = { horizontal: 'center' };
             });
 
-            // Chừa 3 dòng trống (chiều cao để ký tay) rồi in Tên
             currentRow += 4;
             sheet.mergeCells(`A${currentRow}:B${currentRow}`);
             sheet.mergeCells(`C${currentRow}:E${currentRow}`);
@@ -8502,7 +8647,6 @@
                 cell.font = { name: 'Times New Roman', size: 12, bold: true };
                 cell.alignment = { horizontal: 'center' };
             });
-            // --- KẾT THÚC CHỈNH SỬA KHU VỰC CHỮ KÝ ---
 
             currentRow += 2;
             sheet.mergeCells(`A${currentRow}:C${currentRow}`);
@@ -8510,9 +8654,8 @@
             footerCell.value = "WH-P01-F06 (00-06/06/2024)";
             footerCell.font = { name: 'Times New Roman', size: 10, italic: true };
 
-            const safeSoPhieu = meta.soPhieu.replace(/[^a-z0-9-]/gi, '_').toLowerCase() || 'phieu_yeu_cau';
             const buffer = await workbook.xlsx.writeBuffer();
-            saveAs(new Blob([buffer]), `[tên dự án]_xxxxkWp_PHIẾU YÊU CẦU CẤP VẬT TƯ[Hạng mục]_[ngày]-[tháng]-[năm]_REVxx.xlsx`);
+            saveAs(new Blob([buffer]), `${meta.fileName}.xlsx`);
             
             showToast("Đã tải xuống file Excel chuẩn in A4!", "success");
         }
@@ -8523,20 +8666,15 @@
             const printDiv = document.createElement('div');
             printDiv.innerHTML = `
                 <div style="padding: 20px 30px; font-family: 'Times New Roman', serif; color: #000; background: #fff;">
-                    
                     <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 15px;">
                         <div style="width: 25%;">
                             <img src="./images/VAS.png" style="max-width: 140px; height: auto;" alt="VAS Logo" onerror="this.style.display='none'">
                         </div>
-                        
                         <div style="width: 50%; text-align: center;">
-                            <h2 style="font-size: 22px; font-weight: bold; margin: 0 0 5px 0;">
-                                PHIẾU YÊU CẦU CẤP VẬT TƯ
-                            </h2>
+                            <h2 style="font-size: 20px; font-weight: bold; margin: 0 0 5px 0;">${meta.loaiPhieu}</h2>
                             <h2 style="font-size: 14px; font-weight: bold; margin: 0 0 5px 0;">Số: ${meta.soPhieu}</h2>
                             <h2 style="font-size: 14px; font-weight: bold; margin: 0;">${meta.ngayStr}</h2>
                         </div>
-                        
                         <div style="width: 25%;"></div>
                     </div>
 
@@ -8550,7 +8688,7 @@
                                 <th style="border: 1px solid #000; padding: 8px; text-align: center; width: 20%;">VẬT TƯ THIẾT BỊ</th>
                                 <th style="border: 1px solid #000; padding: 8px; text-align: center; width: 18%;">QUY CÁCH KỸ THUẬT</th>
                                 <th style="border: 1px solid #000; padding: 8px; text-align: center; width: 6%;">ĐVT</th>
-                                <th style="border: 1px solid #000; padding: 8px; text-align: center; width: 10%;">SỐ LƯỢNG<br>YÊU CẦU</th>
+                                <th style="border: 1px solid #000; padding: 8px; text-align: center; width: 10%;">${meta.colSlPDF}</th>
                                 <th style="border: 1px solid #000; padding: 8px; text-align: center; width: 28%;">GHI CHÚ</th>
                             </tr>
                         </thead>
@@ -8595,14 +8733,12 @@
                 </div>
             `;
             
-            const safeSoPhieu = meta.soPhieu.replace(/[^a-z0-9-]/gi, '_').toLowerCase() || 'phieu_yeu_cau';
             const opt = {
                 margin:       0.3,
-                filename:     `[tên dự án]_xxxxkWp_PHIẾU YÊU CẦU CẤP VẬT TƯ [Hạng mục]_[ngày]-[tháng]-[năm]_REVxx.pdf`,
+                filename:     `${meta.fileName}.pdf`,
                 image:        { type: 'jpeg', quality: 1 },
                 html2canvas:  { scale: 2, useCORS: true }, 
                 jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' },
-                // THÊM DÒNG NÀY: Ép thư viện không được cắt ngang các class avoid-page-break
                 pagebreak:    { mode: 'css', avoid: ['.avoid-page-break'] }
             };
 
