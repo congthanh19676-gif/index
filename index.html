@@ -8825,9 +8825,10 @@ Gemini là AI và có thể mắc sai sót.
                         ${signHtml}
                     </div>
 
+                    ${loaiPhieu === "PHIẾU YÊU CẦU CẤP VẬT TƯ" ? `
                     <div style="margin-top: 25px; font-size: 10px; text-align: left; font-weight: normal; font-style: italic; color: #666; border-top: 1px dashed #ddd; padding-top: 5px;">
                         WH-P01-F06 (00-06/06/2024)
-                    </div>
+                    </div>` : ""}
                 </div>
             `;
             
@@ -9118,11 +9119,14 @@ Gemini là AI và có thể mắc sai sót.
                 sheet.getCell(`E${currentRow}`).alignment = { horizontal: 'center' };
             }
 
-            currentRow += 2;
-            sheet.mergeCells(`A${currentRow}:C${currentRow}`);
-            const footerCell = sheet.getCell(`A${currentRow}`);
-            footerCell.value = "WH-P01-F06 (00-06/06/2024)";
-            footerCell.font = { name: 'Times New Roman', size: 10, italic: true };
+            // --- ĐIỀU KIỆN ẨN MÃ FORM CHO EXCEL ---
+            if (meta.loaiPhieu === "PHIẾU YÊU CẦU CẤP VẬT TƯ") {
+                currentRow += 2;
+                sheet.mergeCells(`A${currentRow}:C${currentRow}`);
+                const footerCell = sheet.getCell(`A${currentRow}`);
+                footerCell.value = "WH-P01-F06 (00-06/06/2024)";
+                footerCell.font = { name: 'Times New Roman', size: 10, italic: true };
+            }
 
             const buffer = await workbook.xlsx.writeBuffer();
             saveAs(new Blob([buffer]), `${meta.fileName}.xlsx`);
@@ -9232,9 +9236,10 @@ Gemini là AI và có thể mắc sai sót.
                             ${signHtml}
                         </div>
 
+                        ${meta.loaiPhieu === "PHIẾU YÊU CẦU CẤP VẬT TƯ" ? `
                         <div style="margin-top: 30px; font-size: 12px; text-align: left;font-weight: normal; font-style: italic">
                             <p>WH-P01-F06 (00-06/06/2024)</p>
-                        </div>
+                        </div>` : ""}
                     </div>
                 </div>
             `;
