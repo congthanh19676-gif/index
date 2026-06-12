@@ -458,6 +458,117 @@ Gemini là AI và có thể mắc sai sót.
                     </div>
                     <div class="p-4 bg-amber-50 text-amber-600 rounded-2xl"><i class="fa-solid fa-clipboard-list text-2xl"></i></div>
                 </div>
+            </div><!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống quản lý, đề xuất vật tư cho dự án - VAS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .a4-preview-sheet {
+            font-family: 'Times New Roman', Times, serif;
+            color: #000;
+            background: #fff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            min-width: 750px;
+        }
+        .note-input {
+            width: 100%;
+            min-width: 150px;
+            padding: 4px 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 12px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .note-input:focus {
+            border-color: #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <header class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    
+                    <div class="h-10 flex items-center justify-center">
+                        <img src="./images/VAS.png" alt="Logo VAS" class="h-full w-auto object-contain">
+                    </div>
+
+                    <div>
+                        <span class="font-bold text-lg block tracking-wide text-slate-800">CÔNG TY TNHH KỸ THUẬT NĂNG LƯỢNG VAS</span>
+                        <span class="text-xs text-slate-500 block -mt-1">Nền Tảng Quản Lý Yêu Cầu Vật Tư Công Trường</span>
+                    </div>
+                </div>
+                <nav class="flex space-x-1 sm:space-x-2">
+                    <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 bg-blue-600 text-white shadow">
+                        <i class="fa-solid fa-chart-pie mr-1.5"></i>Tổng Quan Thống Kê
+                    </button>
+                    <button onclick="switchTab('danhmuc')" id="tab-danhmuc" class="tab-btn px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-slate-600 hover:bg-slate-100 hover:text-blue-600">
+                        <i class="fa-solid fa-boxes-stacked mr-1.5"></i>Danh Mục Gốc & Yêu Cầu
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2"></div>
+
+        <section id="page-dashboard" class="tab-content block space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Tổng chủng loại</p>
+                        <h3 class="text-2xl font-bold text-slate-800 mt-1" id="stat-total-items">0</h3>
+                        <span class="text-xs text-emerald-500 font-medium"><i class="fa-solid fa-check mr-1"></i>Sẵn sàng cấp phát</span>
+                    </div>
+                    <div class="p-4 bg-blue-50 text-blue-600 rounded-2xl"><i class="fa-solid fa-tags text-2xl"></i></div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Hệ thống kỹ thuật</p>
+                        <h3 class="text-2xl font-bold text-slate-800 mt-1" id="stat-total-categories">0</h3>
+                        <span class="text-xs text-blue-500 font-medium">Phân chia khoa học</span>
+                    </div>
+                    <div class="p-4 bg-emerald-50 text-emerald-600 rounded-2xl"><i class="fa-solid fa-folder-tree text-2xl"></i></div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Thương hiệu & Đối tác</p>
+                        <h3 class="text-2xl font-bold text-slate-800 mt-1" id="stat-total-brands">0</h3>
+                        <span class="text-xs text-indigo-500 font-medium">Hòa Phát, Cadivi...</span>
+                    </div>
+                    <div class="p-4 bg-indigo-50 text-indigo-600 rounded-2xl"><i class="fa-solid fa-handshake text-2xl"></i></div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Vật tư có ghi chú</p>
+                        <h3 class="text-2xl font-bold text-slate-800 mt-1" id="stat-has-notes">0</h3>
+                        <span class="text-xs text-amber-500 font-medium"><i class="fa-solid fa-circle-info mr-1"></i>Cần lưu ý đặc biệt</span>
+                    </div>
+                    <div class="p-4 bg-amber-50 text-amber-600 rounded-2xl"><i class="fa-solid fa-clipboard-list text-2xl"></i></div>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -8606,7 +8717,8 @@ Gemini là AI và có thể mắc sai sót.
             const codeString = "const default_dataset = " + jsonString + ";";
             const blob = new Blob([codeString], { type: 'text/plain;charset=utf-8' });
             const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
+            const a = document.create
+Element('a');
             a.href = url;
             a.download = 'dulieu_backup.txt';
             document.body.appendChild(a);
@@ -8993,9 +9105,7 @@ Gemini là AI và có thể mắc sai sót.
             lydoCell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
             sheet.getRow(currentRow).height = 25; 
             currentRow += 2;
-            } else {
-                currentRow += 1;
-            }
+            
 
             const headerRow = sheet.getRow(currentRow);
             headerRow.values = ["STT", "HẠNG MỤC", "VẬT TƯ THIẾT BỊ", "QUY CÁCH KỸ THUẬT", "ĐVT", meta.colSlExcel, "GHI CHÚ"];
