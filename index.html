@@ -26,6 +26,19 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             min-width: 750px;
         }
+        .note-input {
+            width: 100%;
+            min-width: 150px;
+            padding: 4px 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 12px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .note-input:focus {
+            border-color: #3b82f6;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
@@ -184,6 +197,7 @@
                                 <th class="px-3 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider max-w-[150px]">Quy Cách Kỹ Thuật</th>
                                 <th class="px-3 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">ĐVT</th>
                                 <th class="px-3 py-3.5 text-xs font-bold text-amber-600 uppercase tracking-wider w-24 bg-amber-50 text-center">SL Cần</th>
+                                <th class="px-3 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[150px]">Ghi chú</th>
                                 <th class="px-3 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider w-24 text-center">Thao tác</th>
                             </tr>
                         </thead>
@@ -7810,15 +7824,21 @@
                         dataset_danhmuc.push(JSON.parse(JSON.stringify(defaultItem)));
                         isModified = true;
                     } else {
-                        // TRƯỜNG HỢP 2: Mã đã tồn tại -> Cập nhật tên, quy cách mới nhất từ code 
-                        // nhưng PHẢI GIỮ LẠI "SL Cần" mà người dùng đang nhập
                         const preservedSlCan = dataset_danhmuc[existingIndex].soluongcan || 0;
+                        const preservedExportNote = dataset_danhmuc[existingIndex].exportNote || ""; // Giữ lại ghi chú
                         
-                        // Kiểm tra xem cấu trúc có thay đổi không để tránh ghi đè liên tục
-                        if (JSON.stringify(dataset_danhmuc[existingIndex]) !== JSON.stringify(Object.assign({}, defaultItem, { soluongcan: preservedSlCan }))) {
-                            dataset_danhmuc[existingIndex] = Object.assign({}, defaultItem, { soluongcan: preservedSlCan });
+                        const expectedObj = Object.assign({}, defaultItem, { soluongcan: preservedSlCan, exportNote: preservedExportNote });
+                        if (JSON.stringify(dataset_danhmuc[existingIndex]) !== JSON.stringify(expectedObj)) {
+                            dataset_danhmuc[existingIndex] = expectedObj;
                             isModified = true;
                         }
+                    }
+                });
+                // Đảm bảo các item cũ đã lưu cũng có thuộc tính exportNote
+                dataset_danhmuc.forEach(item => {
+                    if(item.exportNote === undefined) {
+                        item.exportNote = "";
+                        isModified = true;
                     }
                 });
 
@@ -7902,21 +7922,23 @@
                 saveToLocalStorage();
             }
         }
+        function updateExportNote(id, value) {
+            const index = dataset_danhmuc.findIndex(x => x.id === id);
+            if(index !== -1) {
+                dataset_danhmuc[index].exportNote = value;
+                saveToLocalStorage();
+            }
+        }
+
         function resetAllSoLuongCan() {
-            // Hiển thị hộp thoại xác nhận để tránh người dùng bấm nhầm
-            if (confirm("Bạn có chắc chắn muốn đưa toàn bộ 'SL Cần' của tất cả vật tư về 0 để làm phiếu mới?")) {
-                // Duyệt qua mảng và đặt lại số lượng về 0
+            if (confirm("Bạn có chắc chắn muốn đưa toàn bộ 'SL Cần' và 'Ghi chú' của tất cả vật tư về rỗng để làm phiếu mới?")) {
                 dataset_danhmuc.forEach(item => {
                     item.soluongcan = 0;
+                    item.exportNote = ""; // Reset thêm cả ghi chú
                 });
-                
-                // Lưu lại trạng thái mới vào bộ nhớ trình duyệt
                 saveToLocalStorage();
-                
-                // Vẽ lại bảng dữ liệu trên màn hình
                 renderDanhMuc();
-                
-                showToast("Đã reset toàn bộ số lượng cần về 0 thành công!", "success");
+                showToast("Đã reset toàn bộ số lượng cần và ghi chú thành công!", "success");
             }
         }
         function renderDanhMuc() {
@@ -7939,6 +7961,7 @@
 
             filtered.forEach((item, index) => {
                 const slCan = item.soluongcan || 0;
+                const exportNote = item.exportNote || ""; // Thêm dòng này
                 const row = document.createElement('tr');
                 row.className = 'hover:bg-slate-50 transition border-b border-slate-100';
                 row.innerHTML = `
@@ -7951,6 +7974,11 @@
                     <td class="px-3 py-3.5 bg-amber-50/30 text-center">
                         <input type="number" min="0" value="${slCan}" onchange="updateSoLuongCan('${item.id}', this.value)" class="w-16 p-1 border border-amber-200 rounded-lg text-center text-sm font-bold text-amber-700 focus:border-amber-500 outline-none shadow-inner bg-white">
                     </td>
+                    <!-- Thêm khối <td> ghi chú này vào -->
+                    <td class="px-3 py-3.5">
+                        <input type="text" value="${exportNote}" placeholder="Ghi chú xuất..." onchange="updateExportNote('${item.id}', this.value)" class="note-input">
+                    </td>
+                    <!-- Kết thúc phần thêm -->
                     <td class="px-3 py-3.5">
                         <div class="flex items-center justify-center space-x-2">
                             <button onclick="editVattu('${item.id}')" title="Sửa vật tư" class="text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 p-1.5 rounded-lg text-sm font-semibold transition">
@@ -8040,11 +8068,12 @@
             const time = document.getElementById('vt-time').value.trim();
             const soluongcan = parseFloat(document.getElementById('vt-soluongcan').value) || 0;
             const note = document.getElementById('vt-note').value.trim();
+            const exportNote = document.getElementById('vt-exportNote').value.trim();
 
             if (editMode === "EDIT") {
                 const index = dataset_danhmuc.findIndex(x => x.id === id);
                 if (index !== -1) {
-                    dataset_danhmuc[index] = { id, hangmuc, ten, quycach, hang, dvt, safety, time, note, soluongcan };
+                    dataset_danhmuc[index] = { id, hangmuc, ten, quycach, hang, dvt, safety, time, note, soluongcan, exportNote };
                     saveToLocalStorage();
                     showToast(`Đã điều chỉnh thông số vật tư ${id}!`, "success");
                 }
@@ -8052,7 +8081,7 @@
                 if (dataset_danhmuc.some(item => item.id === id)) {
                     return showToast("Mã định danh này đã tồn tại!", "error");
                 }
-                dataset_danhmuc.push({ id, hangmuc, ten, quycach, hang, dvt, safety, time, note, soluongcan });
+                dataset_danhmuc.push({ id, hangmuc, ten, quycach, hang, dvt, safety, time, note, soluongcan, exportNote });
                 saveToLocalStorage();
                 showToast(`Bổ sung thành công mã vật tư ${id}!`, "success");
             }
@@ -8216,7 +8245,7 @@
                             <td style="border: 1px solid #000; padding: 6px;">${item.quycach}</td>
                             <td style="border: 1px solid #000; padding: 6px; text-align: center;">${item.dvt}</td>
                             <td style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; color: #b45309;">${item.soluongcan}</td>
-                            <td style="border: 1px solid #000; padding: 6px;"></td>
+                            <td style="border: 1px solid #000; padding: 6px;">${item.exportNote || ""}</td>
                         </tr>
                     `;
                 });
@@ -8409,7 +8438,7 @@
             let currentRow = 8;
             data.forEach((item, index) => {
                 const row = sheet.getRow(currentRow);
-                row.values = [index + 1, item.hangmuc, item.ten, item.quycach, item.dvt, parseFloat(item.soluongcan), ""];
+                row.values = [index + 1, item.hangmuc, item.ten, item.quycach, item.dvt, parseFloat(item.soluongcan), item.exportNote || ""];
                 row.font = { name: 'Times New Roman', size: 11 };
                 
                 ['A','B','C','D','E','F','G'].forEach(col => {
@@ -8532,7 +8561,7 @@
                                     <td style="border: 1px solid #000; padding: 8px;">${item.quycach}</td>
                                     <td style="border: 1px solid #000; padding: 8px; text-align: center;">${item.dvt}</td>
                                     <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">${item.soluongcan}</td>
-                                    <td style="border: 1px solid #000; padding: 8px;"></td>
+                                    <td style="border: 1px solid #000; padding: 8px;">${item.exportNote || ""}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
