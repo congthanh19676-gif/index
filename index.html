@@ -8272,13 +8272,13 @@
                 <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 20px;">
                     <thead>
                         <tr style="background-color: #f8fafc;">
-                            <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 5%;">STT</th>
-                            <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 15%;">HẠNG MỤC</th>
-                            <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 30%;">VẬT TƯ THIẾT BỊ</th>
-                            <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 25%;">QUY CÁCH KỸ THUẬT</th>
-                            <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 8%;">ĐVT</th>
-                            <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 12%;">SL YÊU CẦU</th>
-                            <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 15%;">GHI CHÚ</th>
+                            <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 4%;">STT</th>
+                            <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 14%;">HẠNG MỤC</th>
+                            <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 20%;">VẬT TƯ THIẾT BỊ</th>
+                            <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 18%;">QUY CÁCH KỸ THUẬT</th>
+                            <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 6%;">ĐVT</th>
+                            <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 10%;">SL YÊU CẦU</th>
+                            <th style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold; width: 28%;">GHI CHÚ</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -8379,9 +8379,15 @@
                 }
             });
 
+            // Đã thu nhỏ Vật tư (22), Quy cách (20) và tăng Ghi chú (35)
             sheet.columns = [
-                { width: 6 },  { width: 22 }, { width: 32 }, { width: 32 }, 
-                { width: 10 }, { width: 18 }, { width: 22 }  
+                { width: 5 },  // A: STT
+                { width: 18 }, // B: HẠNG MỤC
+                { width: 22 }, // C: VẬT TƯ THIẾT BỊ
+                { width: 20 }, // D: QUY CÁCH KỸ THUẬT
+                { width: 8 },  // E: ĐVT
+                { width: 12 }, // F: SL YÊU CẦU
+                { width: 35 }  // G: GHI CHÚ
             ];
 
             try {
@@ -8543,13 +8549,13 @@
                     <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 30px;">
                         <thead>
                             <tr>
-                                <th style="border: 1px solid #000; padding: 8px; text-align: center;">STT</th>
-                                <th style="border: 1px solid #000; padding: 8px; text-align: center;">HẠNG MỤC</th>
-                                <th style="border: 1px solid #000; padding: 8px; text-align: center;">VẬT TƯ THIẾT BỊ</th>
-                                <th style="border: 1px solid #000; padding: 8px; text-align: center;">QUY CÁCH KỸ THUẬT</th>
-                                <th style="border: 1px solid #000; padding: 8px; text-align: center;">ĐVT</th>
-                                <th style="border: 1px solid #000; padding: 8px; text-align: center;">SỐ LƯỢNG<br>YÊU CẦU</th>
-                                <th style="border: 1px solid #000; padding: 8px; text-align: center;">GHI CHÚ</th>
+                                <th style="border: 1px solid #000; padding: 8px; text-align: center; width: 4%;">STT</th>
+                                <th style="border: 1px solid #000; padding: 8px; text-align: center; width: 14%;">HẠNG MỤC</th>
+                                <th style="border: 1px solid #000; padding: 8px; text-align: center; width: 20%;">VẬT TƯ THIẾT BỊ</th>
+                                <th style="border: 1px solid #000; padding: 8px; text-align: center; width: 18%;">QUY CÁCH KỸ THUẬT</th>
+                                <th style="border: 1px solid #000; padding: 8px; text-align: center; width: 6%;">ĐVT</th>
+                                <th style="border: 1px solid #000; padding: 8px; text-align: center; width: 10%;">SỐ LƯỢNG<br>YÊU CẦU</th>
+                                <th style="border: 1px solid #000; padding: 8px; text-align: center; width: 28%;">GHI CHÚ</th>
                             </tr>
                         </thead>
                         <tbody>
