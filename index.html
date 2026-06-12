@@ -8734,11 +8734,18 @@ Gemini là AI và có thể mắc sai sót.
                 });
             }
 
+            const tenDuAn = document.getElementById('export-tenduan').value.trim() || "Dự án Solar";
+            
             let lydoHtml = "";
             if (loaiPhieu === "PHIẾU YÊU CẦU CẤP VẬT TƯ") {
                 lydoHtml = `
                 <div style="font-size: 12px; font-weight: bold; margin-bottom: 12px; text-align: left;">
                     Lý do đề nghị: <span style="font-weight: normal; font-style: italic; color: #374151;">${lydo}</span>
+                </div>`;
+            } else {
+                lydoHtml = `
+                <div style="font-size: 12px; font-weight: bold; margin-bottom: 12px; text-align: left;">
+                    Tên dự án: <span style="font-weight: normal; font-style: italic; color: #374151;">${tenDuAn}</span>
                 </div>`;
             }
 
@@ -8894,7 +8901,7 @@ Gemini là AI và có thể mắc sai sót.
 
             const finalFileName = `${tenDuAn}_${congSuat}kWp_${prefixFile}_${hangMucFile}_${ngayFileStr}_REV${rev}`;
 
-            const metaData = { soPhieu, ngayStr, lydo, nguoiLap, phuTrach, giamDoc, fileName: finalFileName, loaiPhieu, colSlExcel, colSlPDF };
+            const metaData = { soPhieu, ngayStr, lydo, nguoiLap, phuTrach, giamDoc, fileName: finalFileName, loaiPhieu, colSlExcel, colSlPDF, tenDuAn };
 
             if (type === 'excel') {
                 await generateExcel(dataToExport, metaData);
@@ -8972,14 +8979,20 @@ Gemini là AI và có thể mắc sai sót.
 
             let currentRow = 5;
 
+            sheet.mergeCells(`A${currentRow}:G${currentRow}`);
+            const lydoCell = sheet.getCell(`A${currentRow}`);
+            
+            // --- ĐIỀU KIỆN IN TÊN DỰ ÁN CHO EXCEL ---
             if (meta.loaiPhieu === "PHIẾU YÊU CẦU CẤP VẬT TƯ") {
-                sheet.mergeCells(`A${currentRow}:G${currentRow}`);
-                const lydoCell = sheet.getCell(`A${currentRow}`);
                 lydoCell.value = `Lý do đề nghị: ${meta.lydo}`;
-                lydoCell.font = { name: 'Times New Roman', size: 12, bold: true };
-                lydoCell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
-                sheet.getRow(currentRow).height = 25; 
-                currentRow += 2;
+            } else {
+                lydoCell.value = `Tên dự án: ${meta.tenDuAn}`;
+            }
+            
+            lydoCell.font = { name: 'Times New Roman', size: 12, bold: true };
+            lydoCell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+            sheet.getRow(currentRow).height = 25; 
+            currentRow += 2;
             } else {
                 currentRow += 1;
             }
@@ -9141,6 +9154,11 @@ Gemini là AI và có thể mắc sai sót.
                 lydoHtml = `
                 <div style="font-size: 12px; font-weight: bold; margin-bottom: 12px; text-align: left;">
                     Lý do đề nghị: <span style="font-weight: normal; font-style: italic; color: #374151;">${meta.lydo}</span>
+                </div>`;
+            } else {
+                lydoHtml = `
+                <div style="font-size: 12px; font-weight: bold; margin-bottom: 12px; text-align: left;">
+                    Tên dự án: <span style="font-weight: normal; font-style: italic; color: #374151;">${meta.tenDuAn}</span>
                 </div>`;
             }
 
