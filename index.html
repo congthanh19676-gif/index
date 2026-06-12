@@ -157,7 +157,7 @@
     </button>
     
     <button onclick="resetAllSoLuongCan()" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
-        <i class="fa-solid fa-arrow-rotate-left"></i> <span>Reset SL Cần</span>
+        <i class="fa-solid fa-arrow-rotate-left"></i> <span>Reset SL Cần & Ghi chú</span>
     </button>
     
     <button onclick="openModal('add-vattu-modal')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
@@ -191,7 +191,6 @@
                         <thead class="bg-slate-50">
                             <tr>
                                 <th class="px-3 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider w-12 text-center">STT</th>
-                                <th class="px-3 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[120px]">Mã Vật Tư</th>
                                 <th class="px-3 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[120px]">Hệ Thống / Gói Thầu</th>
                                 <th class="px-3 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider max-w-[200px]">Tên Vật Tư / Thiết Bị</th>
                                 <th class="px-3 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider max-w-[150px]">Quy Cách Kỹ Thuật</th>
@@ -7966,7 +7965,6 @@
                 row.className = 'hover:bg-slate-50 transition border-b border-slate-100';
                 row.innerHTML = `
                     <td class="px-3 py-3.5 font-semibold text-slate-400 text-center">${index + 1}</td>
-                    <td class="px-3 py-3.5"><span class="bg-blue-50 text-blue-700 font-mono text-xs px-2 py-1 rounded-md border border-blue-100 break-words inline-block max-w-[140px]">${item.id}</span></td>
                     <td class="px-3 py-3.5 font-semibold text-slate-500 text-xs">${item.hangmuc}</td>
                     <td class="px-3 py-3.5 font-bold text-slate-800 break-words max-w-[200px]">${item.ten}</td>
                     <td class="px-3 py-3.5 font-bold text-indigo-700 text-xs"><span class="bg-indigo-50 border border-indigo-100 px-2 py-1 rounded-lg inline-block break-words max-w-[160px]">${item.quycach}</span></td>
@@ -7974,11 +7972,9 @@
                     <td class="px-3 py-3.5 bg-amber-50/30 text-center">
                         <input type="number" min="0" value="${slCan}" onchange="updateSoLuongCan('${item.id}', this.value)" class="w-16 p-1 border border-amber-200 rounded-lg text-center text-sm font-bold text-amber-700 focus:border-amber-500 outline-none shadow-inner bg-white">
                     </td>
-                    <!-- Thêm khối <td> ghi chú này vào -->
                     <td class="px-3 py-3.5">
                         <input type="text" value="${exportNote}" placeholder="Ghi chú xuất..." onchange="updateExportNote('${item.id}', this.value)" class="note-input">
                     </td>
-                    <!-- Kết thúc phần thêm -->
                     <td class="px-3 py-3.5">
                         <div class="flex items-center justify-center space-x-2">
                             <button onclick="editVattu('${item.id}')" title="Sửa vật tư" class="text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 p-1.5 rounded-lg text-sm font-semibold transition">
