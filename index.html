@@ -143,46 +143,49 @@
         </section>
 
         <section id="page-danhmuc" class="tab-content hidden space-y-6">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                <div>
-                    <h2 class="text-lg font-bold text-slate-800">Cơ Sở Dữ Liệu & Khởi Tạo Yêu Cầu</h2>
-                    <p class="text-xs text-slate-400">Nhập số lượng ở cột "SL Cần" trên bảng để xuất Phiếu Yêu Cầu.</p>
+            <div class="sticky top-16 z-40 bg-slate-50 pt-2 pb-2 space-y-4 -mt-2">
+                
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800">Cơ Sở Dữ Liệu & Khởi Tạo Yêu Cầu</h2>
+                        <p class="text-xs text-slate-400">Nhập số lượng ở cột "SL Cần" trên bảng để xuất Phiếu Yêu Cầu.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="exportCodeSource()" class="bg-slate-700 hover:bg-slate-800 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
+                            <i class="fa-solid fa-code"></i> <span>Xuất Backup Code</span>
+                        </button>
+                        <button onclick="openExportModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
+                            <i class="fa-solid fa-file-export"></i> <span>Xuất Phiếu BOM (Excel/PDF)</span>
+                        </button>
+                        <button onclick="resetAllSoLuongCan()" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
+                            <i class="fa-solid fa-arrow-rotate-left"></i> <span>Reset SL Cần & Ghi chú</span>
+                        </button>
+                        <button onclick="openModal('add-vattu-modal')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
+                            <i class="fa-solid fa-plus"></i> <span>Thêm Mới</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="exportCodeSource()" class="bg-slate-700 hover:bg-slate-800 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
-                        <i class="fa-solid fa-code"></i> <span>Xuất Backup Code</span>
-                    </button>
-                    <button onclick="openExportModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
-                        <i class="fa-solid fa-file-export"></i> <span>Xuất Phiếu BOM (Excel/PDF)</span>
-                    </button>
-                    <button onclick="resetAllSoLuongCan()" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
-                        <i class="fa-solid fa-arrow-rotate-left"></i> <span>Reset SL Cần & Ghi chú</span>
-                    </button>
-                    <button onclick="openModal('add-vattu-modal')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl text-sm font-medium shadow-sm transition duration-150 flex items-center justify-center space-x-1.5">
-                        <i class="fa-solid fa-plus"></i> <span>Thêm Mới</span>
-                    </button>
-                </div>
-            </div>
 
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                    </span>
-                    <input type="text" id="dm-search" oninput="filterDanhMuc()" placeholder="Tìm nhanh mã, tên, quy cách..." class="pl-10 w-full rounded-xl border border-slate-200 bg-slate-50 py-2 px-3 text-sm focus:border-blue-500 focus:bg-white focus:outline-none transition">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </span>
+                        <input type="text" id="dm-search" oninput="filterDanhMuc()" placeholder="Tìm nhanh mã, tên, quy cách..." class="pl-10 w-full rounded-xl border border-slate-200 bg-slate-50 py-2 px-3 text-sm focus:border-blue-500 focus:bg-white focus:outline-none transition">
+                    </div>
+                    <div>
+                        <select id="dm-filter-hangmuc" onchange="filterDanhMuc()" class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 px-3 text-sm focus:border-blue-500 focus:bg-white focus:outline-none transition">
+                            <option value="">-- Tất cả Gói thầu / Hệ thống --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select id="dm-filter-hang" onchange="filterDanhMuc()" class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 px-3 text-sm focus:border-blue-500 focus:bg-white focus:outline-none transition">
+                            <option value="">-- Tất cả Thương hiệu / NCC --</option>
+                        </select>
+                    </div>
                 </div>
-                <div>
-                    <select id="dm-filter-hangmuc" onchange="filterDanhMuc()" class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 px-3 text-sm focus:border-blue-500 focus:bg-white focus:outline-none transition">
-                        <option value="">-- Tất cả Gói thầu / Hệ thống --</option>
-                    </select>
-                </div>
-                <div>
-                    <select id="dm-filter-hang" onchange="filterDanhMuc()" class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 px-3 text-sm focus:border-blue-500 focus:bg-white focus:outline-none transition">
-                        <option value="">-- Tất cả Thương hiệu / NCC --</option>
-                    </select>
-                </div>
+                
             </div>
-
             <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
