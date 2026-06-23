@@ -28611,7 +28611,7 @@
         window.onload = function() {
             autoSyncData();
             syncFiltersAndDropdowns();
-            ();
+            renderDanhMuc();
             updateDashboardMetrics();
             initCharts();
         };
@@ -28688,7 +28688,7 @@
                     item.exportNote = ""; 
                 });
                 saveToLocalStorage();
-                ();
+                renderDanhmuc();
                 showToast("Đã reset toàn bộ số lượng cần và ghi chú thành công!", "success");
             }
         }
