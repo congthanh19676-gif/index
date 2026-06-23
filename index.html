@@ -28611,7 +28611,7 @@
         window.onload = function() {
             autoSyncData();
             syncFiltersAndDropdowns();
-            renderDanhMuc();
+            ();
             updateDashboardMetrics();
             initCharts();
         };
@@ -28688,7 +28688,7 @@
                     item.exportNote = ""; 
                 });
                 saveToLocalStorage();
-                renderDanhMuc();
+                ();
                 showToast("Đã reset toàn bộ số lượng cần và ghi chú thành công!", "success");
             }
         }
@@ -28697,15 +28697,25 @@
             const tableBody = document.getElementById('danhmuc-table-body');
             tableBody.innerHTML = '';
 
-            const searchTerm = document.getElementById('dm-search').value.toLowerCase();
+            // Lấy từ khóa và loại bỏ dấu để so sánh
+            const rawSearchTerm = document.getElementById('dm-search').value;
+            const searchTerm = removeVietnameseTones(rawSearchTerm);
+            
             const filterHm = document.getElementById('dm-filter-hangmuc').value;
             const filterHg = document.getElementById('dm-filter-hang').value;
 
             let filtered = dataset_danhmuc.filter(item => {
-                const matchesSearch = item.id.toLowerCase().includes(searchTerm) || 
-                                      item.ten.toLowerCase().includes(searchTerm) || 
-                                      item.quycach.toLowerCase().includes(searchTerm) || 
-                                      item.hangmuc.toLowerCase().includes(searchTerm);
+                // Loại bỏ dấu của các trường dữ liệu trước khi so sánh
+                const idNorm = removeVietnameseTones(item.id);
+                const tenNorm = removeVietnameseTones(item.ten);
+                const quycachNorm = removeVietnameseTones(item.quycach);
+                const hangmucNorm = removeVietnameseTones(item.hangmuc);
+
+                const matchesSearch = idNorm.includes(searchTerm) || 
+                                      tenNorm.includes(searchTerm) || 
+                                      quycachNorm.includes(searchTerm) || 
+                                      hangmucNorm.includes(searchTerm);
+                                      
                 const matchesHm = filterHm === '' || item.hangmuc === filterHm;
                 const matchesHg = filterHg === '' || item.hang === filterHg;
                 return matchesSearch && matchesHm && matchesHg;
@@ -29565,6 +29575,15 @@ Element('a');
         // ==========================================
         // HELPERS
         // ==========================================
+        
+        // Thêm hàm loại bỏ dấu tiếng Việt
+        function removeVietnameseTones(str) {
+            if (!str) return "";
+            str = str.toLowerCase();
+            str = str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            str = str.replace(/đ/g, 'd');
+            return str;
+        }
         function showToast(message, type = "info") {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
