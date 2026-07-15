@@ -36443,12 +36443,6 @@ Element('a');
                 toast.classList.add('opacity-0', 'translate-y-2');
                 setTimeout(() => toast.remove(), 300);
             }, 3500);
-            {
-    const response = await fetch('materials.json?t=' + Date.now());
-    const data = await response.json();
-
-    renderTable(data);
-}, 10000);
         }
 
         function openModal(id) {
